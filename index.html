@@ -158,7 +158,7 @@ button:active{transform:scale(.97)}
  text-shadow:0 1px 1px rgba(255,255,255,.45);
 }
 .ten{
- width:14px;height:52px;border-radius:4px;
+ width:18px;height:50px;border-radius:4px;
  background:
    linear-gradient(90deg,rgba(255,255,255,.72) 0 17%,transparent 18%),
    linear-gradient(90deg,#70c5ff 0%,#168ef0 48%,#0874d8 100%);
@@ -176,10 +176,9 @@ button:active{transform:scale(.97)}
  transform:rotate(5deg);filter:blur(.35px);opacity:.78;
 }
 .ten:after{
- content:"";position:absolute;left:3px;top:5px;width:4px;height:17px;
- border-radius:50%;
- background:rgba(235,249,255,.30);
- filter:blur(1px);
+ content:"10";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ font-size:9px;font-weight:900;color:#075fae;line-height:1;
+ text-shadow:0 1px 1px rgba(255,255,255,.55);
 }
 .one{
  width:26px;height:26px;border-radius:5px;position:relative;overflow:hidden;
@@ -202,9 +201,9 @@ button:active{transform:scale(.97)}
  transform:rotate(-18deg);filter:blur(.7px);
 }
 .one:after{
- content:"";position:absolute;right:2px;bottom:3px;width:8px;height:6px;
- border-radius:50%;background:rgba(255,255,255,.18);
- transform:rotate(-18deg);filter:blur(1.2px);
+ content:"1";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ font-size:9px;font-weight:900;color:#b51c68;line-height:1;
+ text-shadow:0 1px 1px rgba(255,255,255,.55);
 }
 
 
@@ -374,12 +373,12 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
   .hundred{width:46px;height:46px}
   .hundred:before{left:5.5px;top:4.5px;width:24px;height:9px}
   .hundred:after{font-size:10px}
-  .ten{width:13px;height:47px}
-  .ten:before{left:2px;top:3px;width:8px;height:28px}
-  .ten:after{left:3px;top:5px;width:4px;height:19px}
+  .ten{width:18px;height:46px}
+  .ten:before{left:3px;top:3px;width:9px;height:27px}
+  .ten:after{font-size:9px}
   .one{width:24px;height:24px}
   .one:before{left:3px;top:2px;width:11px;height:5px}
-  .one:after{right:2px;bottom:3px;width:9px;height:7px}
+  .one:after{inset:0;font-size:9px}
 }
 
 /* ===== 상단 학생 정보 / 우측 교실 순위 ===== */
