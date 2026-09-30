@@ -758,7 +758,10 @@ async function loadStudentRecord(profile=classroomProfile){
      setLocalSolvedForStudent(solvedProblems,classroomProfile);
      localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
      renderProfile();
-     if(foundKey!==studentRecordKey(classroomProfile)) await saveStudentRecord();
+     if(foundKey!==studentRecordKey(classroomProfile)){
+       const migrated=await saveStudentRecord();
+       if(!migrated) console.error('기존 학생 기록의 새 번호 형식 변환 실패:',foundKey,'→',studentRecordKey(classroomProfile));
+     }
      refreshClassroomRanks();
      return true;
    }
@@ -906,27 +909,44 @@ async function changeNickname(){
   }
 }
 async function saveStudentRecord(){
- if(!firebaseReady||!classroomProfile)return;
+ if(!firebaseReady||!firebaseDb||!classroomProfile)return false;
  const p=classroomProfile;
  const key=studentRecordKey(p);
- if(!key)return;
+ if(!key)return false;
  try{
-   await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}`).transaction(current=>{
+   const ref=firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}`);
+   const tx=await ref.transaction(current=>{
      const existing=current&&typeof current==='object'?current:{};
      return {
        classNo:Number(p.classNo),
        studentNo:Number(p.studentNo),
-       nickname:p.nickname,
+       nickname:String(p.nickname||''),
        solved:Math.max(Number(existing.solved||0),Number(solvedProblems||0)),
        updatedAt:firebase.database.ServerValue.TIMESTAMP
      };
    });
+   if(!tx.committed){
+     console.error('학생 기록 저장 실패: transaction not committed',key);
+     return false;
+   }
+   const saved=tx.snapshot.val()||{};
+   if(Number(saved.solved||0) < Number(solvedProblems||0)){
+     console.error('학생 기록 저장 검증 실패',key,saved.solved,solvedProblems);
+     return false;
+   }
    const legacy=legacyStudentRecordKey(p);
    if(legacy && legacy!==key){
      const legacySnap=await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${legacy}`).once('value');
-     if(legacySnap.exists()) await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${legacy}`).remove();
+     if(legacySnap.exists()){
+       try{ await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${legacy}`).remove(); }
+       catch(e){ console.warn('기존 번호 형식 정리 실패:',e); }
+     }
    }
- }catch(e){}
+   return true;
+ }catch(e){
+   console.error('학생 기록 저장 실패:',e);
+   return false;
+ }
 }
 function refreshClassroomRanks(){
  if(!firebaseReady||!firebaseDb)return;
@@ -973,24 +993,49 @@ if(rankMonthLabelEl) rankMonthLabelEl.textContent=RANK_MONTH_LABEL;
 setStudentAttention(!(classroomProfile?.classNo && classroomProfile?.studentNo));
 
 async function incrementSolved(){
- solvedProblems+=1;
- setLocalSolvedForStudent(solvedProblems);
- document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
- if(firebaseReady&&firebaseDb&&studentRecordKey()){
-   try{
-     const key=studentRecordKey();
-     const tx=await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}/solved`).transaction(v=>Number(v||0)+1);
-     if(tx.committed){
-       solvedProblems=Math.max(solvedProblems,Number(tx.snapshot.val()||0));
-       setLocalSolvedForStudent(solvedProblems);
-       document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
-       await saveStudentRecord();
-     }
-   }catch(e){}
- }else{
-   await saveStudentRecord();
+ if(!classroomProfile || !studentRecordKey(classroomProfile)){
+   console.warn('학생 정보가 확정되지 않아 문항 수를 저장할 수 없습니다.');
+   return false;
  }
- refreshClassroomRanks();
+ const key=studentRecordKey(classroomProfile);
+ const profile=classroomProfile;
+ if(!(await waitForFirebaseReady(7000))){
+   console.error('Firebase가 준비되지 않아 문항 수를 저장하지 못했습니다.',key);
+   return false;
+ }
+ try{
+   const ref=firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}`);
+   // 문제를 완료한 순간 Firebase의 현재 값에 정확히 +1 한다.
+   // 레코드가 혹시 없더라도 여기서 새로 만들어 저장한다.
+   const tx=await ref.transaction(current=>{
+     const existing=current&&typeof current==='object'?current:{};
+     return {
+       classNo:Number(profile.classNo),
+       studentNo:Number(profile.studentNo),
+       nickname:String(existing.nickname||profile.nickname||''),
+       solved:Math.max(0,Number(existing.solved||0))+1,
+       updatedAt:firebase.database.ServerValue.TIMESTAMP
+     };
+   });
+   if(!tx.committed){
+     console.error('문항 수 저장 실패: transaction not committed',key);
+     return false;
+   }
+   const saved=tx.snapshot.val()||{};
+   const savedSolved=Math.max(0,Number(saved.solved||0));
+   if(savedSolved<=0){
+     console.error('문항 수 저장 검증 실패:',key,saved);
+     return false;
+   }
+   solvedProblems=savedSolved;
+   setLocalSolvedForStudent(solvedProblems,profile);
+   document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
+   refreshClassroomRanks();
+   return true;
+ }catch(e){
+   console.error('문항 수 저장 실패:',key,e);
+   return false;
+ }
 }
 
 
@@ -1021,10 +1066,14 @@ function updateGameHud(){
   if(cp) cp.textContent='(이번 문제 '+currentProblemPoints+'P)';
 }
 
-function addGamePoint(){
+async function addGamePoint(){
   gaEvent('problem_completed');
+  const saved=await incrementSolved();
+  if(!saved){
+    console.error('문제 완료는 되었지만 Firebase 문항 수 저장에 실패했습니다.');
+    return false;
+  }
   gamePoints += currentProblemPoints;
-  incrementSolved();
   stageProblemCount += 1;
 
   if(gameStage===1 && stageProblemCount>=STAGE1_PROBLEMS){
@@ -1191,7 +1240,7 @@ function renderKeys(){
   partial : 다음 숫자를 내려와 만든 부분수. 같은 줄에서 숫자를 이어 붙인다.
   zero : 몫이 0인 열. 별도의 곱셈/뺄셈 줄을 만들지 않는다.
 */
-function input(x){
+async function input(x){
  const s=state,q=customProblem || activeProblems[pi];
  if(s.stage==='quotient'){
   const correct=Math.floor(s.partial/q.d);
@@ -1203,7 +1252,7 @@ function input(x){
    // 0 자체를 계산식으로 한 줄 더 만들지 않는다.
    // 현재 부분수는 그대로 다음 숫자가 붙는 기준이다.
    if((s.col-s.startCol)===(s.digits.length-1)){
-    s.finalRem=s.partial;s.complete=true;s.stage='finish';addGamePoint();
+    s.finalRem=s.partial;s.complete=true;s.stage='finish';await addGamePoint();
        const nb=document.getElementById('nextProblem'); if(nb) nb.style.display='block';render();return;
    }
    s.stage='bring';
@@ -1221,7 +1270,7 @@ function input(x){
   // product -> line -> remainder를 정확히 붙인다. 빈 줄을 만들지 않는다.
   s.rows.push({type:'calc',col:s.col,product:s.product,remainder:s.remainder});
     if((s.col-s.startCol)===(s.digits.length-1)){
-   s.finalRem=x;s.complete=true;s.stage='finish';addGamePoint();
+   s.finalRem=x;s.complete=true;s.stage='finish';await addGamePoint();
      const nb=document.getElementById('nextProblem'); if(nb) nb.style.display='block';render();return;
   }
   s.stage='bring';
