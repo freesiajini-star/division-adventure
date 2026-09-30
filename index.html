@@ -251,6 +251,31 @@ button:active{transform:scale(.97)}
   .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px}
   .rank-panel{grid-column:auto;grid-row:auto}
 }
+/* 태블릿 가로모드 전용 공간 최적화: PC/아이폰 디자인은 그대로 유지 */
+.tablet-break{display:inline}
+@media (max-width:1100px) and (orientation:landscape){
+  .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(170px,.85fr);gap:9px}
+  .rank-panel{padding:10px;min-height:0}
+  .rank-my-card{gap:5px;margin:0 1px 7px;padding:7px 6px}
+  .rank-metric span{font-size:11px;line-height:1.2;text-align:center}
+  .rank-metric strong{font-size:21px}
+  .rank-metric + .rank-metric{padding-left:5px}
+  .tablet-break{display:block}
+
+  /* 세로셈: 한 화면에 전체 격자가 들어오도록 축소 */
+  .long{transform:scale(.82);transform-origin:top center;margin-bottom:-95px}
+
+  /* 수모형: 불필요한 세로 여백을 줄여 한눈에 보이게 */
+  .model{padding:8px;min-height:0}
+  .model-title{margin-bottom:6px}
+  .groups{gap:4px}
+  .group{min-height:155px;padding:5px}
+  .blocks{gap:3px;margin-top:6px}
+  .pool-title{margin:7px 0 4px}
+  .pool{min-height:58px;padding:6px;gap:3px}
+  .note{margin-top:6px;font-size:12px}
+}
+
 @media(max-width:390px){
   .wrap{width:calc(100% - 10px);margin-left:5px;margin-right:5px;padding-left:7px;padding-right:7px}
   h1{font-size:22px}
@@ -506,7 +531,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 
 <aside class="rank-panel" id="rankPanel">
   <div class="rank-title">2026년 9월 순위</div>
-  <div class="rank-my-card"><div class="rank-metric"><span>우리 반에서 나의 순위</span><strong id="myRankNumber">—</strong></div><div class="rank-metric"><span>내가 해결한 문항 수</span><strong id="mySolvedDisplay">0문제</strong></div></div>
+  <div class="rank-my-card"><div class="rank-metric"><span>우리 반에서<span class="tablet-break">나의 순위</span></span><strong id="myRankNumber">—</strong></div><div class="rank-metric"><span>내가 해결한<span class="tablet-break">문항 수</span></span><strong id="mySolvedDisplay">0문제</strong></div></div>
   <div class="rank-section">
     <h3>우리 반 친구들 순위</h3>
     <ol class="rank-list" id="classRankList"><li class="rank-empty">아직 기록이 없습니다.</li></ol>
