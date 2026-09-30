@@ -731,11 +731,13 @@ function setStudentConnectedState(mode){
 }
 function studentRecordKey(profile=classroomProfile){
  const c=Number(profile?.classNo), n=Number(profile?.studentNo);
- return (Number.isInteger(c)&&c>0&&Number.isInteger(n)&&n>0) ? `${String(c).padStart(2,'0')}_${String(n).padStart(2,'0')}` : null;
+ // 기존 Firebase 데이터와 규칙이 사용하는 키 형식을 유지한다.
+ // 06_08처럼 앞에 0을 붙이면 기존 6_8 기록과 다른 학생 키가 되어
+ // 로그인은 되더라도 문항 수 저장이 실패할 수 있다.
+ return (Number.isInteger(c)&&c>0&&Number.isInteger(n)&&n>0) ? `${c}_${n}` : null;
 }
 function legacyStudentRecordKey(profile=classroomProfile){
- const c=Number(profile?.classNo), n=Number(profile?.studentNo);
- return (Number.isInteger(c)&&c>0&&Number.isInteger(n)&&n>0) ? `${c}_${n}` : null;
+ return studentRecordKey(profile);
 }
 function studentRecordKeys(profile=classroomProfile){
  const canonical=studentRecordKey(profile), legacy=legacyStudentRecordKey(profile);
