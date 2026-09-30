@@ -520,7 +520,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 </section>
 
 <aside class="rank-panel" id="rankPanel">
-  <div class="rank-title">2026년 10월 순위</div>
+  <div class="rank-title" id="rankMonthLabel">순위</div>
   <div class="rank-my-card"><div class="rank-metric"><span>우리 반에서 나의 순위</span><strong id="myRankNumber">—</strong></div><div class="rank-metric"><span>내가 해결한 문항 수</span><strong id="mySolvedDisplay">0문제</strong></div></div>
   <div class="rank-section">
     <h3>우리 반 친구들 순위</h3>
@@ -608,6 +608,7 @@ const ANIMAL_NICKNAMES=[
 ];
 const RANK_MONTH_KEY=(()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;})();
 const RANK_MONTH_LABEL=(()=>{const [y,m]=RANK_MONTH_KEY.split('-');return `${y}년 ${Number(m)}월`;})();
+document.getElementById('rankMonthLabel').textContent=`${RANK_MONTH_LABEL} 순위`;
 const MONTHLY_SOLVED_KEY=`divisionAdventureSolved_${RANK_MONTH_KEY}`;
 function studentSolvedKey(profile=classroomProfile){ const k=studentRecordKey(profile); return k?`divisionAdventureSolved_${RANK_MONTH_KEY}_${k}`:null; }
 function getLocalSolvedForStudent(profile=classroomProfile){ const k=studentSolvedKey(profile); return k?Math.max(0,Number(localStorage.getItem(k)||0)):0; }
