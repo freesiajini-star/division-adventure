@@ -252,7 +252,7 @@ button:active{transform:scale(.97)}
   .rank-panel{grid-column:auto;grid-row:auto}
 }
 /* 태블릿 가로모드 전용 공간 최적화: PC/아이폰 디자인은 그대로 유지 */
-.tablet-break{display:inline}
+.tablet-break{display:inline}.iphone-portrait-break{display:none}
 @media (max-width:1100px) and (orientation:landscape){
   .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(170px,.85fr);gap:9px}
   .rank-panel{padding:10px;min-height:0}
@@ -451,7 +451,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 @media(max-width:1100px){.rank-panel{padding:12px}.rank-list li{font-size:12px}.student-label,.student-topbar .top-action,.theme-buttons button,.student-topbar .nickname,.student-topbar input{font-size:12px}}
 @media(max-width:800px){.theme-controls{top:7px;left:7px;right:7px;justify-content:space-between;align-items:flex-start;gap:8px}.student-topbar{gap:4px;flex-wrap:wrap;max-width:calc(100vw - 155px)}.theme-buttons{gap:4px}.theme-buttons button{min-height:30px;padding:4px 8px;font-size:11px}.student-topbar .nickname,.student-topbar input,.student-topbar .top-action{height:30px;min-height:30px;font-size:11px}.student-topbar .nickname{min-width:62px;padding:0 8px}.student-topbar input{width:34px}.classroom-msg{top:34px;font-size:10px}.rank-panel{min-height:0}}
 @media(max-width:600px) and (orientation:portrait){.theme-controls{position:absolute;top:7px}.student-topbar{max-width:100%;}.theme-buttons{display:none}.classroom-msg{display:none}}
-@media(max-width:600px) and (orientation:portrait){.rank-metric span .tablet-break{display:block}}
+@media(max-width:600px) and (orientation:portrait){.rank-metric .iphone-portrait-break{display:block}.rank-metric .tablet-break{display:inline}}
 </style>
 <style id="nickname-result-animation">
 @keyframes nicknameConflictFlash{0%{box-shadow:inset 0 1px 2px rgba(255,255,255,.35),0 1px 4px rgba(38,58,72,.10);background:rgba(255,255,255,.42)}35%{box-shadow:0 0 0 4px rgba(220,62,62,.24),0 0 18px rgba(220,62,62,.72);background:rgba(255,225,225,.92);transform:scale(1.045)}70%{box-shadow:0 0 0 2px rgba(220,62,62,.16),0 0 9px rgba(220,62,62,.42);background:rgba(255,238,238,.78);transform:scale(1.018)}100%{box-shadow:inset 0 1px 2px rgba(255,255,255,.35),0 1px 4px rgba(38,58,72,.10);background:rgba(255,255,255,.42);transform:scale(1)}}
@@ -548,7 +548,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 
 <aside class="rank-panel" id="rankPanel">
   <div class="rank-title">2026년 9월 순위</div>
-  <div class="rank-my-card"><div class="rank-metric"><span>우리 반에서<span class="tablet-break">나의 순위</span></span><strong id="myRankNumber">—</strong></div><div class="rank-metric"><span>내가 해결한<span class="tablet-break">문항 수</span></span><strong id="mySolvedDisplay">0문제</strong></div></div>
+  <div class="rank-my-card"><div class="rank-metric"><span>우리 반에서<br class="iphone-portrait-break"><span class="tablet-break">나의 순위</span></span><strong id="myRankNumber">—</strong></div><div class="rank-metric"><span>내가 해결한<br class="iphone-portrait-break"><span class="tablet-break">문항 수</span></span><strong id="mySolvedDisplay">0문제</strong></div></div>
   <div class="rank-section">
     <h3>우리 반 친구들 순위</h3>
     <ol class="rank-list" id="classRankList"><li class="rank-empty">아직 기록이 없습니다.</li></ol>
