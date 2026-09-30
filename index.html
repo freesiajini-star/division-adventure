@@ -539,7 +539,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 </div>
 </div>
 
-<div class="copyright-footer">© 2026 봉산초등학교 3학년 나눗셈 탐험대 · Version 7.12 · All rights reserved.</div>
+<div class="copyright-footer">© 2026 봉산초등학교 3학년 나눗셈 탐험대 · Version 7.13 · All rights reserved.</div>
 
 <!-- Firebase: division-adventure 프로젝트 연결 -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -838,13 +838,32 @@ function flashNicknameResult(ok){
  el.classList.add(ok?'nickname-available':'nickname-conflict');
  setTimeout(()=>el.classList.remove('nickname-conflict','nickname-available'),850);
 }
-function changeNickname(){
+async function changeNickname(){
   if(!classroomProfile || !studentRecordKey(classroomProfile)) return;
   const old=classroomProfile.nickname;
   const next=pickNickname(old);
   classroomProfile.nickname=next;
   renderProfile();
   document.getElementById('classroomMsg').textContent='';
+
+  // 별명을 뽑는 순간, 같은 반에서 이미 사용 중인지 바로 확인한다.
+  // 결과는 별명 상자 자체의 빨강/초록 애니메이션으로만 알려준다.
+  const nicknameBox=document.getElementById('nicknameDisplay');
+  if(!firebaseReady || !firebaseDb){
+    return;
+  }
+  try{
+    const snap=await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students`).once('value');
+    const all=Object.values(snap.val()||{});
+    const myKey=studentRecordKey(classroomProfile);
+    const duplicate=all.some(x=>x && Number(x.classNo)===Number(classroomProfile.classNo) && String(x.nickname||'')===next && `${x.classNo}_${x.studentNo}`!==myKey);
+    flashNicknameResult(!duplicate);
+  }catch(e){
+    // 조회에 실패한 경우에는 잘못된 색을 보여주지 않는다.
+    if(nicknameBox){
+      nicknameBox.classList.remove('nickname-conflict','nickname-available');
+    }
+  }
 }
 async function saveStudentRecord(){
  if(!firebaseReady||!classroomProfile)return;
