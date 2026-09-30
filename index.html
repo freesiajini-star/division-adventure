@@ -466,11 +466,12 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 <body>
 <div class="theme-controls" aria-label="학생 정보와 배경 선택">
   <div class="student-topbar" id="classroomBar">
-    <span class="student-label">나의 별명</span><span class="nickname" id="nicknameDisplay">원숭이</span>
-    <button type="button" id="changeNicknameBtn" class="top-action">별명 고르기</button>
     <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="2" aria-label="반 번호"><span class="student-label">반</span>
     <input id="studentNumberInput" inputmode="numeric" maxlength="2" aria-label="학생 번호"><span class="student-label">번</span>
-    <button type="button" id="confirmStudentBtn" class="top-action">확정하기</button>
+    <button type="button" id="confirmStudentBtn" class="top-action">접속</button>
+    <span class="student-label" id="nicknameLabel" style="display:none">이달의 내 별명</span><span class="nickname" id="nicknameDisplay" style="display:none">—</span>
+    <button type="button" id="changeNicknameBtn" class="top-action" style="display:none">별명 고르기</button>
+    <button type="button" id="finalizeNicknameBtn" class="top-action" style="display:none">확정</button>
     <span class="classroom-msg" id="classroomMsg" aria-live="polite"></span>
   </div>
   <div class="theme-buttons">
@@ -560,10 +561,21 @@ if(FIREBASE_ENABLED){
  try{
    firebase.initializeApp(FIREBASE_CONFIG);
    firebaseDb=firebase.database();
-   firebase.auth().signInAnonymously().then(async u=>{firebaseUid=u.user.uid;firebaseReady=true;await ensureUniqueCurrentNickname();await loadStudentRecord();refreshClassroomRanks();}).catch(()=>{});
- }catch(e){}
-}
-</script>
+   firebase.auth().signInAnonymously().then(async u=>{
+     firebaseUid=u.user.uid;
+     firebaseReady=true;
+     try{ await ensureUniqueCurrentNickname(); }catch(e){}
+     try{ await loadStudentRecord(); }catch(e){}
+     try{ refreshClassroomRanks(); }catch(e){}
+   }).catch(err=>{
+     console.error('Firebase anonymous auth failed:',err);
+     firebaseReady=false;
+     firebaseUid=null;
+   });
+ }catch(e){
+   console.error('Firebase initialization failed:',e);
+ }
+}</script>
 <script>
 // Google Analytics custom events. 개인정보(실명/반번호/닉네임)는 Analytics로 보내지 않습니다.
 function gaEvent(name, params={}){
@@ -597,7 +609,7 @@ function getLocalSolvedForStudent(profile=classroomProfile){ const k=studentSolv
 function setLocalSolvedForStudent(value,profile=classroomProfile){ const k=studentSolvedKey(profile); if(k)localStorage.setItem(k,String(Math.max(0,Number(value)||0))); }
 const MONTHLY_RANK_PATH=`thirdGrade/monthly/${RANK_MONTH_KEY}`;
 let classroomProfile=JSON.parse(localStorage.getItem('divisionAdventureProfile')||'null');
-if(!classroomProfile || !classroomProfile.nickname){ classroomProfile={...(classroomProfile||{}),nickname:'원숭이'}; localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile)); }
+if(!classroomProfile || !classroomProfile.classNo || !classroomProfile.studentNo){ classroomProfile=null; }
 let solvedProblems=0;
 if(classroomProfile?.classNo && classroomProfile?.studentNo){ solvedProblems=getLocalSolvedForStudent(classroomProfile); }
 let lastRankSnapshot='';
@@ -646,15 +658,9 @@ function renderProfile(){
  const p=classroomProfile;
  document.getElementById('classInput').value=p?.classNo||'';
  document.getElementById('studentNumberInput').value=p?.studentNo||'';
- document.getElementById('nicknameDisplay').innerHTML=nicknameHTML(p?.nickname||'—');
- document.getElementById('confirmStudentBtn').textContent='확정하기';
+ const nick=document.getElementById('nicknameDisplay');
+ nick.innerHTML=nicknameHTML(p?.nickname||'—');
  document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
-}
-function ensureNickname(){
- if(!classroomProfile?.nickname){
-   classroomProfile={...(classroomProfile||{}),nickname:pickNickname()};
-   renderProfile();
- }
 }
 function setStudentAttention(active){
  const classInput=document.getElementById('classInput');
@@ -665,79 +671,163 @@ function setStudentAttention(active){
    el.classList.toggle('student-confirmed',!active);
  });
 }
+function setStudentConnectedState(mode){
+ const confirmBtn=document.getElementById('confirmStudentBtn');
+ const nickLabel=document.getElementById('nicknameLabel');
+ const nick=document.getElementById('nicknameDisplay');
+ const changeBtn=document.getElementById('changeNicknameBtn');
+ const finalizeBtn=document.getElementById('finalizeNicknameBtn');
+ const classInput=document.getElementById('classInput');
+ const numberInput=document.getElementById('studentNumberInput');
+ if(mode==='existing'){
+   confirmBtn.style.display='none';
+   nickLabel.style.display='inline';
+   nick.style.display='inline-flex';
+   changeBtn.style.display='none';
+   finalizeBtn.style.display='none';
+   classInput.disabled=true; numberInput.disabled=true;
+   setStudentAttention(false);
+ }else if(mode==='new'){
+   confirmBtn.style.display='none';
+   nickLabel.textContent='';
+   nickLabel.style.display='none';
+   nick.style.display='inline-flex';
+   changeBtn.style.display='inline-block';
+   finalizeBtn.style.display='inline-block';
+   classInput.disabled=true; numberInput.disabled=true;
+   setStudentAttention(false);
+   document.getElementById('finalizeNicknameBtn').classList.add('student-attention');
+ }else{
+   confirmBtn.style.display='inline-block';
+   confirmBtn.textContent='접속';
+   nickLabel.style.display='none'; nick.style.display='none';
+   changeBtn.style.display='none'; finalizeBtn.style.display='none';
+   classInput.disabled=false; numberInput.disabled=false;
+   setStudentAttention(true);
+ }
+}
 function studentRecordKey(profile=classroomProfile){
  const c=Number(profile?.classNo), n=Number(profile?.studentNo);
  return (Number.isInteger(c)&&c>0&&Number.isInteger(n)&&n>0) ? `${c}_${n}` : null;
 }
-async function loadStudentRecord(){
- if(!classroomProfile)return;
- const key=studentRecordKey();
- if(!key)return;
- solvedProblems=getLocalSolvedForStudent(classroomProfile);
- document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
- if(!firebaseReady||!firebaseDb)return;
+async function loadStudentRecord(profile=classroomProfile){
+ if(!profile)return false;
+ const key=studentRecordKey(profile);
+ if(!key)return false;
+ if(!firebaseReady||!firebaseDb)return false;
  try{
    const snap=await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}`).once('value');
    const remote=snap.val();
    if(remote){
-     const remoteSolved=Math.max(0,Number(remote.solved||0));
-     solvedProblems=remoteSolved;
+     classroomProfile={classNo:Number(remote.classNo||profile.classNo),studentNo:Number(remote.studentNo||profile.studentNo),nickname:String(remote.nickname||profile.nickname||'')};
+     solvedProblems=Math.max(0,Number(remote.solved||0));
      setLocalSolvedForStudent(solvedProblems,classroomProfile);
-     if(remote.nickname && remote.nickname!==classroomProfile.nickname){
-       classroomProfile.nickname=remote.nickname;
-       localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
-       renderProfile();
-     }
-     document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
+     localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
+     renderProfile();
+     refreshClassroomRanks();
+     return true;
    }
-   await saveStudentRecord();
-   refreshClassroomRanks();
- }catch(e){}
+   return false;
+ }catch(e){ return false; }
 }
+async function waitForFirebaseReady(timeoutMs=8000){
+ if(firebaseReady&&firebaseDb&&firebaseUid)return true;
+ if(!FIREBASE_ENABLED||!firebaseDb)return false;
+ try{
+   const auth=firebase.auth();
+   if(auth.currentUser){
+     firebaseUid=auth.currentUser.uid;
+     firebaseReady=true;
+     return true;
+   }
+   // 기존에 정상 작동하던 익명 인증 방식을 그대로 사용한다.
+   const cred=await Promise.race([
+     auth.signInAnonymously(),
+     new Promise((_,reject)=>setTimeout(()=>reject(new Error('Firebase 인증 시간 초과')),timeoutMs))
+   ]);
+   firebaseUid=cred.user.uid;
+   firebaseReady=true;
+   return true;
+ }catch(e){
+   console.error('Firebase connection error:',e);
+   return false;
+ }
+}
+
 async function confirmStudent(){
  const c=String(document.getElementById('classInput').value).trim();
  const n=String(document.getElementById('studentNumberInput').value).trim();
- if(!/^\d{1,2}$/.test(c)||!/^\d{1,2}$/.test(n)){document.getElementById('classroomMsg').textContent='반과 번호를 숫자로 입력해 주세요.';return;}
- ensureNickname();
- const nickname=classroomProfile.nickname;
- document.getElementById('classroomMsg').textContent='';
-
- // 화면의 학생 정보는 Firebase 응답을 기다리지 않고 즉시 확정한다.
- classroomProfile={classNo:Number(c),studentNo:Number(n),nickname};
- solvedProblems=getLocalSolvedForStudent(classroomProfile);
- localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
- flashNicknameResult(true);
- setStudentAttention(false);
- renderProfile();
-
- // Firebase 별명 예약과 기록 저장은 백그라운드에서 처리한다.
- if(firebaseReady&&firebaseDb&&firebaseUid){
-   (async()=>{
-     try{
-       const reservationRef=firebaseDb.ref(`${MONTHLY_RANK_PATH}/nicknameReservations/${nickname}`);
-       const tx=await Promise.race([
-         reservationRef.transaction(v=>v==null||v===firebaseUid?firebaseUid:v),
-         new Promise(resolve=>setTimeout(()=>resolve(null),1500))
-       ]);
-       if(tx && tx.committed && tx.snapshot.val()===firebaseUid){
-         const allSnap=await firebaseDb.ref(`${MONTHLY_RANK_PATH}/nicknameReservations`).once('value');
-         const all=allSnap.val()||{};
-         const releases=[];
-         Object.entries(all).forEach(([name,owner])=>{
-           if(name!==nickname && owner===firebaseUid){
-             releases.push(firebaseDb.ref(`${MONTHLY_RANK_PATH}/nicknameReservations/${name}`).transaction(v=>v===firebaseUid?null:v));
-           }
-         });
-         if(releases.length) await Promise.all(releases);
-       }else if(tx && (!tx.committed || tx.snapshot.val()!==firebaseUid)){
-         flashNicknameResult(false);
-       }
-       await loadStudentRecord();
-       refreshClassroomRanks();
-     }catch(e){}
-   })();
- }else{
+ const msg=document.getElementById('classroomMsg');
+ const btn=document.getElementById('confirmStudentBtn');
+ if(!/^\d{1,2}$/.test(c)||!/^\d{1,2}$/.test(n)){
+   if(msg)msg.textContent='반과 번호를 입력해 주세요.';
+   return;
+ }
+ if(msg)msg.textContent='접속 중입니다…';
+ if(btn){
+   btn.disabled=true;
+   btn.textContent='접속 중…';
+   btn.classList.remove('student-attention');
+ }
+ const ready=await waitForFirebaseReady(7000);
+ if(!ready){
+   if(msg)msg.textContent=`Firebase 접속에 실패했습니다. ${firebaseAuthError||'인증을 확인해 주세요.'}`;
+   if(btn){btn.disabled=false;btn.textContent='접속';btn.classList.add('student-attention');}
+   return;
+ }
+ const key=`${Number(c)}_${Number(n)}`;
+ try{
+   const snap=await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}`).once('value');
+   const remote=snap.val();
+   if(remote){
+     classroomProfile={classNo:Number(c),studentNo:Number(n),nickname:String(remote.nickname||'')};
+     solvedProblems=Math.max(0,Number(remote.solved||0));
+     setLocalSolvedForStudent(solvedProblems,classroomProfile);
+     localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
+     renderProfile();
+     setStudentConnectedState('existing');
+     if(msg)msg.textContent='';
+     flashNicknameResult(true);
+     refreshClassroomRanks();
+     return;
+   }
+   // 이번 달 기록이 없는 신규 학생. 아직 학생 기록을 Firebase에 만들지 않는다.
+   classroomProfile={classNo:Number(c),studentNo:Number(n),nickname:''};
+   solvedProblems=0;
+   localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
+   renderProfile();
+   setStudentConnectedState('new');
+   if(msg)msg.textContent='별명을 골라 주세요.';
+ }catch(e){
+   if(msg)msg.textContent='기록을 확인하지 못했습니다. 잠시 후 다시 눌러 주세요.';
+   if(btn){btn.disabled=false;btn.textContent='접속';btn.classList.add('student-attention');}
+ }
+}
+async function finalizeNickname(){
+ const nickname=String(classroomProfile?.nickname||'').trim();
+ if(!nickname)return;
+ const key=studentRecordKey();
+ if(!key||!firebaseReady||!firebaseDb)return;
+ try{
+   const allSnap=await firebaseDb.ref(`${MONTHLY_RANK_PATH}/students`).once('value');
+   const all=Object.values(allSnap.val()||{});
+   const duplicate=all.some(x=>x&&Number(x.classNo)===Number(classroomProfile.classNo)&&String(x.nickname||'')===nickname&&`${x.classNo}_${x.studentNo}`!==key);
+   if(duplicate){
+     flashNicknameResult(false);
+     document.getElementById('finalizeNicknameBtn').classList.remove('student-attention');
+     void document.getElementById('finalizeNicknameBtn').offsetWidth;
+     document.getElementById('finalizeNicknameBtn').classList.add('student-attention');
+     return;
+   }
+   solvedProblems=0;
+   setLocalSolvedForStudent(0,classroomProfile);
+   await saveStudentRecord();
+   localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
+   setStudentConnectedState('existing');
+   flashNicknameResult(true);
    refreshClassroomRanks();
+ }catch(e){
+   flashNicknameResult(false);
  }
 }
 function flashNicknameResult(ok){
@@ -749,17 +839,12 @@ function flashNicknameResult(ok){
  setTimeout(()=>el.classList.remove('nickname-conflict','nickname-available'),850);
 }
 function changeNickname(){
-  // 버튼을 누르는 즉시 화면의 별명이 바뀌도록 한다. Firebase 응답을 기다리느라
-  // 버튼이 아무 반응 없는 것처럼 보이지 않게 하고, 예약 처리는 백그라운드에서 한다.
-  ensureNickname();
+  if(!classroomProfile || !studentRecordKey(classroomProfile)) return;
   const old=classroomProfile.nickname;
   const next=pickNickname(old);
   classroomProfile.nickname=next;
-  localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
   renderProfile();
   document.getElementById('classroomMsg').textContent='';
-  setStudentAttention(true);
-  // 별명은 여기서 화면에서만 고르고, 실제 사용 확정은 [확정하기]에서 원자적으로 처리한다.
 }
 async function saveStudentRecord(){
  if(!firebaseReady||!classroomProfile)return;
@@ -1229,9 +1314,9 @@ function good(t){$('feedback').textContent=t;$('feedback').className='feedback g
 function bad(t){$('feedback').textContent=t;$('feedback').className='feedback bad'}
 document.getElementById('changeNicknameBtn').addEventListener('click',changeNickname);
 document.getElementById('confirmStudentBtn').addEventListener('click',confirmStudent);
-ensureNickname();
+document.getElementById('finalizeNicknameBtn').addEventListener('click',finalizeNickname);
 renderProfile();
-setStudentAttention(true);
+setStudentConnectedState('login');
 
 (function(){
   const adventureBtn=document.getElementById('adventureBgBtn');
