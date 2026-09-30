@@ -1140,13 +1140,12 @@ document.getElementById('customExpression').addEventListener('keydown',e=>{
 });
 
 function makeAutoProblem(){
-  // 자동 출제는 초3 세로셈 연습에 맞춰
-  // 두 자리 수 ÷ 한 자리 수 / 세 자리 수 ÷ 한 자리 수만 생성한다.
-  const digits=Math.random()<0.5?2:3;
-  const min=digits===2?10:100;
-  const max=digits===2?99:999;
-  const n=min+Math.floor(Math.random()*(max-min+1));
-  const d=2+Math.floor(Math.random()*8); // 2~9
+  // 자동 출제: 세 자리 수 ÷ 한 자리 수이며, 반드시 나머지가 있도록 생성한다.
+  let n,d;
+  do {
+    n=100+Math.floor(Math.random()*900); // 100~999
+    d=2+Math.floor(Math.random()*8);     // 2~9
+  } while(n%d===0);
   return {n,d};
 }
 
@@ -1445,6 +1444,10 @@ setStudentConnectedState('login');
   adventureBtn.addEventListener('click',()=>setTheme('adventure'));
   chalkBtn.addEventListener('click',()=>setTheme('chalk'));
 })();
+
+// 첫 문제는 매번 새로운 세 자리 수 ÷ 한 자리 수로 시작한다.
+// 반드시 나머지가 있도록 하며, 이후의 기존 문제 진행 구조는 그대로 유지한다.
+problems[0]=makeAutoProblem();
 init();
 </script>
 </body>
