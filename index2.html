@@ -1141,12 +1141,47 @@ document.getElementById('customExpression').addEventListener('keydown',e=>{
 });
 
 function makeAutoProblem(){
-  // 자동 출제: 세 자리 수 ÷ 한 자리 수이며, 반드시 나머지가 있도록 생성한다.
+  // 첫 시작 화면: 기존 방식 그대로.
+  // 세 자리 수 ÷ 한 자리 수이며, 반드시 나머지가 있도록 생성한다.
   let n,d;
   do {
     n=100+Math.floor(Math.random()*900); // 100~999
     d=2+Math.floor(Math.random()*8);     // 2~9
   } while(n%d===0);
+  return {n,d};
+}
+
+function makeMixedAutoProblem(){
+  // 「자동 출제문제」: 아래 4가지 유형을 같은 확률로 섞어서 출제한다.
+  const type=Math.floor(Math.random()*4);
+  let n,d;
+
+  if(type===0){
+    // 나머지가 있는 세 자리 수 ÷ 한 자리 수
+    do {
+      n=100+Math.floor(Math.random()*900);
+      d=2+Math.floor(Math.random()*8);
+    } while(n%d===0);
+  }else if(type===1){
+    // 나머지가 없는 세 자리 수 ÷ 한 자리 수
+    do {
+      n=100+Math.floor(Math.random()*900);
+      d=2+Math.floor(Math.random()*8);
+    } while(n%d!==0);
+  }else if(type===2){
+    // 나머지가 있는 두 자리 수 ÷ 한 자리 수
+    do {
+      n=10+Math.floor(Math.random()*90);
+      d=2+Math.floor(Math.random()*8);
+    } while(n%d===0);
+  }else{
+    // 나머지가 없는 두 자리 수 ÷ 한 자리 수
+    do {
+      n=10+Math.floor(Math.random()*90);
+      d=2+Math.floor(Math.random()*8);
+    } while(n%d!==0);
+  }
+
   return {n,d};
 }
 
@@ -1159,7 +1194,7 @@ function autoProblem(){
   // 같은 문제가 연속해서 나오지 않도록 한다.
   let next;
   do {
-    next=makeAutoProblem();
+    next=makeMixedAutoProblem();
   } while(lastAutoProblem && next.n===lastAutoProblem.n && next.d===lastAutoProblem.d);
 
   lastAutoProblem=next;
