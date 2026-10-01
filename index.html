@@ -1527,9 +1527,15 @@ setStudentConnectedState('login');
   chalkBtn.addEventListener('click',()=>setTheme('chalk'));
 })();
 
-// 첫 문제는 매번 새로운 세 자리 수 ÷ 한 자리 수로 시작한다.
-// 반드시 나머지가 있도록 하며, 이후의 기존 문제 진행 구조는 그대로 유지한다.
-problems[0]=makeAutoProblem();
+// 첫 문제만: 반드시 나머지가 있는 세 자리 수 ÷ 한 자리 수로 시작한다.
+// 자동 출제 버튼의 기존 4종 랜덤 출제 로직은 그대로 유지한다.
+let firstProblem;
+do {
+  const n=100+Math.floor(Math.random()*900);
+  const d=2+Math.floor(Math.random()*8);
+  firstProblem={n,d};
+} while(firstProblem.n % firstProblem.d === 0);
+problems[0]=firstProblem;
 init();
 </script>
 
