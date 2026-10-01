@@ -280,6 +280,66 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
     text-shadow:0 1px 2px rgba(0,0,0,.45);
     letter-spacing:.1px;
   }
+
+/* ===== 야간 이용 제한 ===== */
+#nightLockOverlay{
+  position:fixed;
+  inset:0;
+  z-index:2147483647;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(255,255,255,.58);
+  -webkit-backdrop-filter:blur(13px);
+  backdrop-filter:blur(13px);
+  cursor:not-allowed;
+  user-select:none;
+  -webkit-user-select:none;
+}
+#nightLockOverlay.is-locked{
+  display:flex;
+}
+#nightLockMessage{
+  width:min(560px, calc(100vw - 48px));
+  padding:38px 34px 32px;
+  border:1px solid rgba(255,255,255,.78);
+  border-radius:26px;
+  background:rgba(255,255,255,.78);
+  box-shadow:0 18px 55px rgba(35,55,80,.18);
+  text-align:center;
+  color:#27324a;
+  pointer-events:none;
+}
+#nightLockMessage .night-emoji{
+  display:block;
+  margin-bottom:14px;
+  font-size:clamp(42px,7vw,64px);
+  line-height:1;
+}
+#nightLockMessage .night-main{
+  display:block;
+  font-size:clamp(25px,4vw,38px);
+  line-height:1.45;
+  font-weight:800;
+  letter-spacing:-.04em;
+}
+#nightLockMessage .night-sub{
+  display:block;
+  margin-top:18px;
+  font-size:clamp(14px,2vw,18px);
+  line-height:1.5;
+  font-weight:500;
+  color:#647084;
+  letter-spacing:-.02em;
+}
+@media (max-width:600px){
+  #nightLockMessage{
+    padding:30px 22px 26px;
+    border-radius:22px;
+  }
+}
+
 </style>
 
 
@@ -462,23 +522,8 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 .student-topbar .nickname{min-width:122px !important;width:122px;box-sizing:border-box;padding-left:10px;padding-right:10px}
 @media(max-width:800px){.student-topbar .nickname{min-width:116px !important;width:116px;padding-left:8px;padding-right:8px}}
 </style>
-<style id="sleep-lock-preview">
-#sleepLock{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:28px;background:rgba(21,31,45,.64);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-#sleepLock .sleep-card{width:min(560px,calc(100vw - 48px));padding:42px 34px 34px;text-align:center;background:rgba(255,255,255,.96);border:2px solid rgba(190,153,105,.42);border-radius:26px;box-shadow:0 18px 45px rgba(25,35,48,.28),0 2px 8px rgba(25,35,48,.12)}
-#sleepLock .sleep-main{margin:0;color:#70401f;font-size:clamp(25px,4vw,38px);font-weight:900;line-height:1.35;letter-spacing:-.04em}
-#sleepLock .sleep-sub{margin:16px 0 0;color:#7b8791;font-size:clamp(13px,1.8vw,16px);font-weight:700;line-height:1.5}
-@media(max-width:600px){#sleepLock{padding:20px}#sleepLock .sleep-card{width:calc(100vw - 32px);padding:34px 22px 28px;border-radius:22px}#sleepLock .sleep-main{font-size:25px}}
-</style>
-
 </head>
 <body>
-<div id="sleepLock" aria-modal="true" role="dialog">
-  <div class="sleep-card">
-    <p class="sleep-main">봉산초 친구들, 지금은 잘 시간입니다.</p>
-    <p class="sleep-sub">밤 9시부터 아침 6시까지 이용이 제한됩니다.</p>
-  </div>
-</div>
-
 <div class="theme-controls" aria-label="학생 정보와 배경 선택">
   <div class="student-topbar" id="classroomBar">
     <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="2" aria-label="반 번호"><span class="student-label">반</span>
@@ -1467,18 +1512,63 @@ problems[0]=makeAutoProblem();
 init();
 </script>
 
+<!-- 야간 이용 제한: 21:00 ~ 06:00 -->
+<div id="nightLockOverlay" aria-hidden="true">
+  <div id="nightLockMessage" role="alertdialog" aria-modal="true">
+    <span class="night-emoji">🌜</span>
+    <span class="night-main">봉산초 친구들,<br>지금은 잘 시간입니다.</span>
+    <span class="night-sub">밤 9시부터 아침 6시까지 이용을 제한합니다.</span>
+  </div>
+</div>
+
+
 <script>
+/* ===== 야간 이용 제한: 매일 21:00~06:00 ===== */
 (function(){
-  const start=10*60+30, end=11*60+20;
-  function updatePreviewLock(){
-    const d=new Date(); const m=d.getHours()*60+d.getMinutes();
-    const locked=m>=start && m<end;
-    const el=document.getElementById('sleepLock');
-    if(el) el.style.display=locked?'flex':'none';
+  const overlay = document.getElementById('nightLockOverlay');
+  if(!overlay) return;
+
+  let locked = false;
+
+  function isNightLockTime(){
+    const now = new Date();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    // 21:00 이상 또는 06:00 이전
+    return minutes >= 21 * 60 || minutes < 6 * 60;
   }
-  updatePreviewLock();
-  setInterval(updatePreviewLock,1000);
+
+  function setNightLock(){
+    const next = isNightLockTime();
+    if(next === locked) return;
+    locked = next;
+    overlay.classList.toggle('is-locked', locked);
+    overlay.setAttribute('aria-hidden', locked ? 'false' : 'true');
+    document.documentElement.classList.toggle('night-locked', locked);
+    document.body.classList.toggle('night-locked', locked);
+  }
+
+  // 클릭/터치/키보드 등 페이지 조작을 완전히 차단한다.
+  const block = function(e){
+    if(!locked) return;
+    if(e.target === overlay || overlay.contains(e.target) || document.body.classList.contains('night-locked')){
+      e.preventDefault();
+      e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    }
+  };
+  ['click','dblclick','mousedown','mouseup','pointerdown','pointerup',
+   'touchstart','touchend','contextmenu','wheel','dragstart',
+   'keydown','keypress','keyup','beforeinput','input'].forEach(type=>{
+    document.addEventListener(type, block, true);
+  });
+
+  setNightLock();
+  // 자정/06시/21시 경계를 놓치지 않도록 10초마다 확인한다.
+  setInterval(setNightLock, 10000);
+  window.addEventListener('focus', setNightLock);
+  document.addEventListener('visibilitychange', setNightLock);
 })();
 </script>
+
 </body>
 </html>
