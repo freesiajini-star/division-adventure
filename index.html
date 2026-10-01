@@ -1201,12 +1201,33 @@ document.getElementById('customExpression').addEventListener('keydown',e=>{
 });
 
 function makeAutoProblem(){
-  // 자동 출제: 세 자리 수 ÷ 한 자리 수이며, 반드시 나머지가 있도록 생성한다.
+  // 자동 출제: 네 가지 유형을 섞어서 출제한다.
+  // 1) 나머지가 있는 세 자리 수 ÷ 한 자리 수
+  // 2) 나머지가 없는 세 자리 수 ÷ 한 자리 수
+  // 3) 나머지가 있는 두 자리 수 ÷ 한 자리 수
+  // 4) 나머지가 없는 두 자리 수 ÷ 한 자리 수
+  const type=Math.floor(Math.random()*4);
   let n,d;
+
   do {
-    n=100+Math.floor(Math.random()*900); // 100~999
-    d=2+Math.floor(Math.random()*8);     // 2~9
-  } while(n%d===0);
+    if(type===0){
+      n=100+Math.floor(Math.random()*900);
+      d=2+Math.floor(Math.random()*8);
+    }else if(type===1){
+      d=2+Math.floor(Math.random()*8);
+      const q=10+Math.floor(Math.random()*90);
+      n=q*d;
+    }else if(type===2){
+      n=10+Math.floor(Math.random()*90);
+      d=2+Math.floor(Math.random()*8);
+    }else{
+      d=2+Math.floor(Math.random()*8);
+      const q=2+Math.floor(Math.random()*12);
+      n=q*d;
+      if(n<10 || n>99) continue;
+    }
+  } while(n%d===0 && (type===0 || type===2) || n%d!==0 && (type===1 || type===3));
+
   return {n,d};
 }
 
