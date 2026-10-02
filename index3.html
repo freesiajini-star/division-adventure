@@ -466,7 +466,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 <body>
 <div class="theme-controls" aria-label="학생 정보와 배경 선택">
   <div class="student-topbar" id="classroomBar">
-    <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="2" aria-label="반 번호"><span class="student-label">반</span>
+    <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="3" aria-label="반 번호"><span class="student-label">반</span>
     <input id="studentNumberInput" inputmode="numeric" maxlength="2" aria-label="학생 번호"><span class="student-label">번</span>
     <button type="button" id="confirmStudentBtn" class="top-action">접속</button>
     <span class="student-label" id="nicknameLabel" style="display:none">이달의 내 별명</span><span class="nickname" id="nicknameDisplay" style="display:none">—</span>
@@ -619,9 +619,9 @@ let classroomProfile=JSON.parse(localStorage.getItem('divisionAdventureProfile')
 function hasValidStudentProfile(profile=classroomProfile){
  const c=String(profile?.classNo??'').trim();
  const n=Number(profile?.studentNo);
- return (c==='00'||/^[1-9]\d?$/.test(c)) && Number.isInteger(n) && n>0;
+ return (c==='100'||/^[1-9]\d?$/.test(c)) && Number.isInteger(n) && n>0;
 }
-function isBlindClass(profile=classroomProfile){ return String(profile?.classNo??'')==='00' || Number(profile?.classNo)===0; }
+function isBlindClass(profile=classroomProfile){ return String(profile?.classNo??'')==='100' || Number(profile?.classNo)===100; }
 if(!hasValidStudentProfile(classroomProfile)){ classroomProfile=null; }
 let solvedProblems=0;
 if(hasValidStudentProfile(classroomProfile)){ solvedProblems=getLocalSolvedForStudent(classroomProfile); }
@@ -741,9 +741,9 @@ function setStudentConnectedState(mode){
 function studentRecordKey(profile=classroomProfile){
  const rawClass=String(profile?.classNo??'').trim();
  const c=Number(rawClass), n=Number(profile?.studentNo);
- // 00반은 블라인드 반이므로 Firebase 키에서도 별도의 반으로 보존한다.
+ // 100반은 블라인드 반이다.
  // 일반 반은 기존처럼 숫자 반 번호를 사용한다.
- if(rawClass==='00' && Number.isInteger(n) && n>0) return `00_${n}`;
+ if(rawClass==='100' && Number.isInteger(n) && n>0) return `100_${n}`;
  return (Number.isInteger(c)&&c>0&&Number.isInteger(n)&&n>0) ? `${c}_${n}` : null;
 }
 function legacyStudentRecordKey(profile=classroomProfile){
@@ -765,7 +765,7 @@ async function loadStudentRecord(profile=classroomProfile){
      if(snap.exists()){remote=snap.val();foundKey=key;break;}
    }
    if(remote){
-     classroomProfile={classNo:(String(remote.classNo)==='00'||Number(remote.classNo)===0)?'00':Number(remote.classNo||profile.classNo),studentNo:Number(remote.studentNo||profile.studentNo),nickname:String(remote.nickname||profile.nickname||'')};
+     classroomProfile={classNo:(String(remote.classNo)==='100'||Number(remote.classNo)===100)?'100':Number(remote.classNo||profile.classNo),studentNo:Number(remote.studentNo||profile.studentNo),nickname:String(remote.nickname||profile.nickname||'')};
      solvedProblems=Math.max(0,Number(remote.solved||0));
      setLocalSolvedForStudent(solvedProblems,classroomProfile);
      localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
@@ -809,7 +809,7 @@ async function confirmStudent(){
  const n=String(document.getElementById('studentNumberInput').value).trim();
  const msg=document.getElementById('classroomMsg');
  const btn=document.getElementById('confirmStudentBtn');
- if(!(/^(?:00|[1-9]\d?)$/.test(c))||!/^\d{1,2}$/.test(n)){
+ if(!(/^(?:100|[1-9]\d?)$/.test(c))||!/^\d{1,2}$/.test(n)){
 
    if(msg)msg.textContent='반과 번호를 입력해 주세요.';
    return;
@@ -826,7 +826,7 @@ async function confirmStudent(){
    if(btn){btn.disabled=false;btn.textContent='접속';btn.classList.add('student-attention');}
    return;
  }
- const profileForLookup={classNo:c==='00'?'00':Number(c),studentNo:Number(n)};
+ const profileForLookup={classNo:c==='100'?'100':Number(c),studentNo:Number(n)};
  const keys=studentRecordKeys(profileForLookup);
  try{
    let remote=null, foundKey=null;
@@ -835,7 +835,7 @@ async function confirmStudent(){
      if(snap.exists()){remote=snap.val();foundKey=key;break;}
    }
    if(remote){
-     classroomProfile={classNo:c==='00'?'00':Number(c),studentNo:Number(n),nickname:String(remote.nickname||'')};
+     classroomProfile={classNo:c==='100'?'100':Number(c),studentNo:Number(n),nickname:String(remote.nickname||'')};
      solvedProblems=Math.max(0,Number(remote.solved||0));
      setLocalSolvedForStudent(solvedProblems,classroomProfile);
      localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
@@ -848,7 +848,7 @@ async function confirmStudent(){
      return;
    }
    // 이번 달 기록이 없는 신규 학생. 아직 학생 기록을 Firebase에 만들지 않는다.
-   classroomProfile={classNo:c==='00'?'00':Number(c),studentNo:Number(n),nickname:''};
+   classroomProfile={classNo:c==='100'?'100':Number(c),studentNo:Number(n),nickname:''};
    solvedProblems=0;
    localStorage.setItem('divisionAdventureProfile',JSON.stringify(classroomProfile));
    renderProfile();
@@ -931,7 +931,7 @@ async function saveStudentRecord(){
    const tx=await ref.transaction(current=>{
      const existing=current&&typeof current==='object'?current:{};
      return {
-       classNo:Number(p.classNo),
+       classNo:(String(p.classNo)==='100'?'100':Number(p.classNo)),
        studentNo:Number(p.studentNo),
        nickname:String(p.nickname||''),
        solved:Math.max(Number(existing.solved||0),Number(solvedProblems||0)),
@@ -970,7 +970,7 @@ async function updatePresence(){
   if(!presenceRef) presenceRef=firebaseDb.ref(`${MONTHLY_RANK_PATH}/presence/${key}`);
   try{
     await presenceRef.update({
-      classNo:Number(classroomProfile.classNo),
+      classNo:(String(classroomProfile.classNo)==='100'?'100':Number(classroomProfile.classNo)),
       studentNo:Number(classroomProfile.studentNo),
       nickname:String(classroomProfile.nickname||''),
       lastSeen:firebase.database.ServerValue.TIMESTAMP
@@ -1060,7 +1060,7 @@ async function incrementSolved(){
    const tx=await ref.transaction(current=>{
      const existing=current&&typeof current==='object'?current:{};
      return {
-       classNo:Number(profile.classNo),
+       classNo:(String(profile.classNo)==='100'?'100':Number(profile.classNo)),
        studentNo:Number(profile.studentNo),
        nickname:String(existing.nickname||profile.nickname||''),
        solved:Math.max(0,Number(existing.solved||0))+1,
