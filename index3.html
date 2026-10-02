@@ -739,10 +739,11 @@ function setStudentConnectedState(mode){
  startPresence();
 }
 function studentRecordKey(profile=classroomProfile){
- const c=Number(profile?.classNo), n=Number(profile?.studentNo);
- // 기존 Firebase 데이터와 규칙이 사용하는 키 형식을 유지한다.
- // 06_08처럼 앞에 0을 붙이면 기존 6_8 기록과 다른 학생 키가 되어
- // 로그인은 되더라도 문항 수 저장이 실패할 수 있다.
+ const rawClass=String(profile?.classNo??'').trim();
+ const c=Number(rawClass), n=Number(profile?.studentNo);
+ // 00반은 블라인드 반이므로 Firebase 키에서도 별도의 반으로 보존한다.
+ // 일반 반은 기존처럼 숫자 반 번호를 사용한다.
+ if(rawClass==='00' && Number.isInteger(n) && n>0) return `00_${n}`;
  return (Number.isInteger(c)&&c>0&&Number.isInteger(n)&&n>0) ? `${c}_${n}` : null;
 }
 function legacyStudentRecordKey(profile=classroomProfile){
