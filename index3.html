@@ -400,7 +400,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 .student-label{font-weight:900;color:#fff7dd;font-size:13px;text-shadow:0 1px 2px rgba(0,0,0,.28)}
 .student-topbar .nickname,.student-topbar input{height:34px;min-height:34px;border:1px solid rgba(105,123,139,.55);border-radius:17px;background:rgba(255,255,255,.94);color:#34556a;font-size:13px;font-weight:900;box-shadow:0 2px 6px rgba(38,58,72,.18);text-align:center}
 .student-topbar .nickname{display:inline-flex;align-items:center;justify-content:center;min-width:76px;padding:0 12px}
-.student-topbar input{width:42px;padding:0 5px}
+.student-topbar input{width:52px;padding:0 5px}
 .student-topbar .top-action{height:34px;min-height:34px;padding:5px 11px;border:1px solid rgba(105,123,139,.55);border-radius:17px;background:rgba(255,255,255,.92);color:#34556a;font-size:13px;font-weight:900;line-height:1;box-shadow:0 2px 6px rgba(38,58,72,.18);cursor:pointer;white-space:nowrap}
 .student-topbar .top-action:hover,.theme-buttons button:hover{filter:brightness(1.03);transform:translateY(-1px)}
 .classroom-msg{position:absolute;left:0;top:40px;color:#fff7dd;font-size:11px;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.3);pointer-events:none}
@@ -422,7 +422,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 @keyframes rankPulse{0%{transform:scale(1)}45%{transform:scale(1.035)}100%{transform:scale(1)}}
 .rank-note{text-align:center;color:#7b8791;font-size:10px;line-height:1.4;margin-top:5px;position:relative;z-index:1}
 @media(max-width:1100px){.rank-panel{padding:12px}.rank-list li{font-size:12px}.student-label,.student-topbar .top-action,.theme-buttons button,.student-topbar .nickname,.student-topbar input{font-size:12px}}
-@media(max-width:800px){.theme-controls{top:7px;left:7px;right:7px;justify-content:space-between;align-items:flex-start;gap:8px}.student-topbar{gap:4px;flex-wrap:wrap;max-width:calc(100vw - 155px)}.theme-buttons{gap:4px}.theme-buttons button{min-height:30px;padding:4px 8px;font-size:11px}.student-topbar .nickname,.student-topbar input,.student-topbar .top-action{height:30px;min-height:30px;font-size:11px}.student-topbar .nickname{min-width:62px;padding:0 8px}.student-topbar input{width:34px}.classroom-msg{top:34px;font-size:10px}.rank-panel{min-height:0}}
+@media(max-width:800px){.theme-controls{top:7px;left:7px;right:7px;justify-content:space-between;align-items:flex-start;gap:8px}.student-topbar{gap:4px;flex-wrap:wrap;max-width:calc(100vw - 155px)}.theme-buttons{gap:4px}.theme-buttons button{min-height:30px;padding:4px 8px;font-size:11px}.student-topbar .nickname,.student-topbar input,.student-topbar .top-action{height:30px;min-height:30px;font-size:11px}.student-topbar .nickname{min-width:62px;padding:0 8px}.student-topbar input{width:44px}.classroom-msg{top:34px;font-size:10px}.rank-panel{min-height:0}}
 @media(max-width:600px) and (orientation:portrait){.theme-controls{position:absolute;top:7px}.student-topbar{max-width:100%;}.theme-buttons{display:none}.classroom-msg{display:none}}
 </style>
 <style id="nickname-result-animation">
@@ -444,7 +444,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 .school-label{font-weight:900;color:#fff7dd;font-size:13px;text-shadow:0 1px 2px rgba(0,0,0,.28);margin-left:3px}
 .student-topbar .nickname,.student-topbar input{background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.68);box-shadow:inset 0 1px 2px rgba(255,255,255,.35),0 1px 4px rgba(38,58,72,.10);color:#294f63 !important}
 .student-topbar .nickname{min-width:82px}
-.student-topbar input{width:42px}
+.student-topbar input{width:52px}
 .student-topbar .top-action,.theme-buttons button{background:rgba(255,255,255,.92) !important}
 .rank-panel{background:rgba(255,255,255,.86) !important;border:2px solid rgba(190,153,105,.38) !important;border-radius:20px !important;box-shadow:0 5px 14px rgba(86,73,51,.12) !important}
 .rank-panel:before{inset:0;border:0 !important}
@@ -466,7 +466,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 <body>
 <div class="theme-controls" aria-label="학생 정보와 배경 선택">
   <div class="student-topbar" id="classroomBar">
-    <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="2" aria-label="반 번호"><span class="student-label">반</span>
+    <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="3" aria-label="반 번호"><span class="student-label">반</span>
     <input id="studentNumberInput" inputmode="numeric" maxlength="2" aria-label="학생 번호"><span class="student-label">번</span>
     <button type="button" id="confirmStudentBtn" class="top-action">접속</button>
     <span class="student-label" id="nicknameLabel" style="display:none">이달의 내 별명</span><span class="nickname" id="nicknameDisplay" style="display:none">—</span>
@@ -1009,6 +1009,52 @@ function updateGameHud(){
   if(title) title.textContent=customProblem ? '식 보기' : (gameStage===1 ? '1단계 탐험' : '2단계 탐험');
   const cp=document.getElementById('currentProblemPoints');
   if(cp) cp.textContent='(이번 문제 '+currentProblemPoints+'P)';
+}
+
+async function incrementSolved(){
+ if(!classroomProfile || !studentRecordKey(classroomProfile)){
+   console.warn('학생 정보가 확정되지 않아 문항 수를 저장할 수 없습니다.');
+   return false;
+ }
+ const key=studentRecordKey(classroomProfile);
+ const profile=classroomProfile;
+ if(!(await waitForFirebaseReady(7000))){
+   console.error('Firebase가 준비되지 않아 문항 수를 저장하지 못했습니다.',key);
+   return false;
+ }
+ try{
+   const ref=firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}`);
+   // 문제를 완료한 순간 Firebase의 현재 값에 정확히 +1 한다.
+   // 레코드가 혹시 없더라도 여기서 새로 만들어 저장한다.
+   const tx=await ref.transaction(current=>{
+     const existing=current&&typeof current==='object'?current:{};
+     return {
+       classNo:Number(profile.classNo),
+       studentNo:Number(profile.studentNo),
+       nickname:String(existing.nickname||profile.nickname||''),
+       solved:Math.max(0,Number(existing.solved||0))+1,
+       updatedAt:firebase.database.ServerValue.TIMESTAMP
+     };
+   });
+   if(!tx.committed){
+     console.error('문항 수 저장 실패: transaction not committed',key);
+     return false;
+   }
+   const saved=tx.snapshot.val()||{};
+   const savedSolved=Math.max(0,Number(saved.solved||0));
+   if(savedSolved<=0){
+     console.error('문항 수 저장 검증 실패:',key,saved);
+     return false;
+   }
+   solvedProblems=savedSolved;
+   setLocalSolvedForStudent(solvedProblems,profile);
+   document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
+   refreshClassroomRanks();
+   return true;
+ }catch(e){
+   console.error('문항 수 저장 실패:',key,e);
+   return false;
+ }
 }
 
 async function addGamePoint(){
