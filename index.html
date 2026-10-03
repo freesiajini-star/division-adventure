@@ -1206,18 +1206,19 @@ function makeAutoProblem(){
 }
 
 function makeMixedAutoProblem(){
-  // 자동문제출제: 정확히 네 종류 중 하나를 랜덤 선택한다.
-  // 1) 나머지 있는 세 자리 ÷ 한 자리
-  // 2) 나머지 없는 세 자리 ÷ 한 자리
-  // 3) 나머지 있는 두 자리 ÷ 한 자리
-  // 4) 나머지 없는 두 자리 ÷ 한 자리
-  const type=Math.floor(Math.random()*4);
+  // 자동문제출제 확률
+  // 1) 나머지 있는 세 자리 ÷ 한 자리: 50%
+  // 2) 나머지 없는 세 자리 ÷ 한 자리: 25%
+  // 3) 나머지 있는 두 자리 ÷ 한 자리: 20%
+  // 4) 나머지 없는 두 자리 ÷ 한 자리: 5%
+  const r=Math.random();
+  const type=r<0.50 ? 0 : r<0.75 ? 1 : r<0.95 ? 2 : 3;
   let n,d;
   do {
     if(type===0 || type===1) n=100+Math.floor(Math.random()*900);
     else n=10+Math.floor(Math.random()*90);
     d=2+Math.floor(Math.random()*8);
-  } while(type%2===0 ? n%d===0 : n%d!==0);
+  } while(type===0 || type===2 ? n%d===0 : n%d!==0);
   return {n,d};
 }
 
