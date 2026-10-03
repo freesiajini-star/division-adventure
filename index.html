@@ -400,7 +400,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 .student-label{font-weight:900;color:#fff7dd;font-size:13px;text-shadow:0 1px 2px rgba(0,0,0,.28)}
 .student-topbar .nickname,.student-topbar input{height:34px;min-height:34px;border:1px solid rgba(105,123,139,.55);border-radius:17px;background:rgba(255,255,255,.94);color:#34556a;font-size:13px;font-weight:900;box-shadow:0 2px 6px rgba(38,58,72,.18);text-align:center}
 .student-topbar .nickname{display:inline-flex;align-items:center;justify-content:center;min-width:76px;padding:0 12px}
-.student-topbar input{width:42px;padding:0 5px}
+.student-topbar input{width:52px;padding:0 5px}
 .student-topbar .top-action{height:34px;min-height:34px;padding:5px 11px;border:1px solid rgba(105,123,139,.55);border-radius:17px;background:rgba(255,255,255,.92);color:#34556a;font-size:13px;font-weight:900;line-height:1;box-shadow:0 2px 6px rgba(38,58,72,.18);cursor:pointer;white-space:nowrap}
 .student-topbar .top-action:hover,.theme-buttons button:hover{filter:brightness(1.03);transform:translateY(-1px)}
 .classroom-msg{position:absolute;left:0;top:40px;color:#fff7dd;font-size:11px;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.3);pointer-events:none}
@@ -422,7 +422,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 @keyframes rankPulse{0%{transform:scale(1)}45%{transform:scale(1.035)}100%{transform:scale(1)}}
 .rank-note{text-align:center;color:#7b8791;font-size:10px;line-height:1.4;margin-top:5px;position:relative;z-index:1}
 @media(max-width:1100px){.rank-panel{padding:12px}.rank-list li{font-size:12px}.student-label,.student-topbar .top-action,.theme-buttons button,.student-topbar .nickname,.student-topbar input{font-size:12px}}
-@media(max-width:800px){.theme-controls{top:7px;left:7px;right:7px;justify-content:space-between;align-items:flex-start;gap:8px}.student-topbar{gap:4px;flex-wrap:wrap;max-width:calc(100vw - 155px)}.theme-buttons{gap:4px}.theme-buttons button{min-height:30px;padding:4px 8px;font-size:11px}.student-topbar .nickname,.student-topbar input,.student-topbar .top-action{height:30px;min-height:30px;font-size:11px}.student-topbar .nickname{min-width:62px;padding:0 8px}.student-topbar input{width:34px}.classroom-msg{top:34px;font-size:10px}.rank-panel{min-height:0}}
+@media(max-width:800px){.theme-controls{top:7px;left:7px;right:7px;justify-content:space-between;align-items:flex-start;gap:8px}.student-topbar{gap:4px;flex-wrap:wrap;max-width:calc(100vw - 155px)}.theme-buttons{gap:4px}.theme-buttons button{min-height:30px;padding:4px 8px;font-size:11px}.student-topbar .nickname,.student-topbar input,.student-topbar .top-action{height:30px;min-height:30px;font-size:11px}.student-topbar .nickname{min-width:62px;padding:0 8px}.student-topbar input{width:44px}.classroom-msg{top:34px;font-size:10px}.rank-panel{min-height:0}}
 @media(max-width:600px) and (orientation:portrait){.theme-controls{position:absolute;top:7px}.student-topbar{max-width:100%;}.theme-buttons{display:none}.classroom-msg{display:none}}
 </style>
 <style id="nickname-result-animation">
@@ -444,7 +444,7 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 .school-label{font-weight:900;color:#fff7dd;font-size:13px;text-shadow:0 1px 2px rgba(0,0,0,.28);margin-left:3px}
 .student-topbar .nickname,.student-topbar input{background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.68);box-shadow:inset 0 1px 2px rgba(255,255,255,.35),0 1px 4px rgba(38,58,72,.10);color:#294f63 !important}
 .student-topbar .nickname{min-width:82px}
-.student-topbar input{width:42px}
+.student-topbar input{width:52px}
 .student-topbar .top-action,.theme-buttons button{background:rgba(255,255,255,.92) !important}
 .rank-panel{background:rgba(255,255,255,.86) !important;border:2px solid rgba(190,153,105,.38) !important;border-radius:20px !important;box-shadow:0 5px 14px rgba(86,73,51,.12) !important}
 .rank-panel:before{inset:0;border:0 !important}
@@ -462,11 +462,48 @@ body.chalk-theme{background:#174f4d url("data:image/webp;base64,UklGRjCiAQBXRUJQ
 .student-topbar .nickname{min-width:122px !important;width:122px;box-sizing:border-box;padding-left:10px;padding-right:10px}
 @media(max-width:800px){.student-topbar .nickname{min-width:116px !important;width:116px;padding-left:8px;padding-right:8px}}
 </style>
+
+<style id="night-lock-style">
+#nightLockOverlay{
+  position:fixed;inset:0;z-index:2147483647;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  pointer-events:auto;touch-action:none;
+}
+body.night-lock-active > :not(#nightLockOverlay):not(script){
+  filter:blur(14px);
+  pointer-events:none !important;
+  user-select:none !important;
+}
+#nightLockOverlay .night-lock-box{
+  width:min(88vw,620px);box-sizing:border-box;
+  padding:42px 34px 32px;
+  border:1px solid rgba(255,255,255,.88);
+  border-radius:28px;
+  background:rgba(255,255,255,.88);
+  box-shadow:0 18px 55px rgba(40,55,70,.20),inset 0 1px 0 rgba(255,255,255,.95);
+  text-align:center;color:#26364a;
+}
+#nightLockOverlay .night-lock-moon{font-size:54px;line-height:1;margin-bottom:20px}
+#nightLockOverlay .night-lock-title{font-size:clamp(25px,4vw,38px);font-weight:900;line-height:1.45;white-space:pre-line}
+#nightLockOverlay .night-lock-subtitle{margin-top:18px;font-size:clamp(16px,2.3vw,21px);font-weight:800;line-height:1.6;white-space:pre-line;color:#526174}
+#nightLockOverlay .night-lock-footer{margin-top:28px;font-size:12px;font-weight:700;color:#9aa5b2}
+</style>
 </head>
 <body>
+<div id="nightLockOverlay" aria-hidden="true">
+  <div class="night-lock-box" role="dialog" aria-modal="true" aria-label="이용 제한 안내">
+    <div class="night-lock-moon">🌜</div>
+    <div class="night-lock-title">봉산초 친구들,
+지금은 잘 시간입니다.</div>
+    <div class="night-lock-subtitle">밤 9시부터 아침 6시까지 이용을 제한합니다.</div>
+    <div class="night-lock-footer">오전 6시부터 다시 이용할 수 있습니다.</div>
+  </div>
+</div>
 <div class="theme-controls" aria-label="학생 정보와 배경 선택">
   <div class="student-topbar" id="classroomBar">
-    <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="2" aria-label="반 번호"><span class="student-label">반</span>
+    <span class="school-label">봉산초등학교 3학년</span><input id="classInput" inputmode="numeric" maxlength="3" aria-label="반 번호"><span class="student-label">반</span>
     <input id="studentNumberInput" inputmode="numeric" maxlength="2" aria-label="학생 번호"><span class="student-label">번</span>
     <button type="button" id="confirmStudentBtn" class="top-action">접속</button>
     <span class="student-label" id="nicknameLabel" style="display:none">이달의 내 별명</span><span class="nickname" id="nicknameDisplay" style="display:none">—</span>
@@ -729,7 +766,8 @@ function setStudentConnectedState(mode){
    classInput.disabled=false; numberInput.disabled=false;
    setStudentAttention(true);
  }
-}
+
+  if(mode==='existing') startPresence();}
 function studentRecordKey(profile=classroomProfile){
  const c=Number(profile?.classNo), n=Number(profile?.studentNo);
  // 기존 Firebase 데이터와 규칙이 사용하는 키 형식을 유지한다.
@@ -800,7 +838,7 @@ async function confirmStudent(){
  const n=String(document.getElementById('studentNumberInput').value).trim();
  const msg=document.getElementById('classroomMsg');
  const btn=document.getElementById('confirmStudentBtn');
- if(!/^\d{1,2}$/.test(c)||!/^\d{1,2}$/.test(n)){
+ if(!/^\d{1,3}$/.test(c)||!/^\d{1,2}$/.test(n)){
    if(msg)msg.textContent='반과 번호를 입력해 주세요.';
    return;
  }
@@ -951,15 +989,21 @@ async function saveStudentRecord(){
    return false;
  }
 }
+function isBlindClass(profile=classroomProfile){
+ return Number(profile?.classNo)===100;
+}
+
 function refreshClassroomRanks(){
  if(!firebaseReady||!firebaseDb)return;
  const monthLabel=document.getElementById('rankMonthLabel');
  if(monthLabel) monthLabel.textContent=RANK_MONTH_LABEL;
  firebaseDb.ref(`${MONTHLY_RANK_PATH}/students`).once('value').then(snap=>{
    const all=Object.values(snap.val()||{}).filter(x=>x&&Number.isFinite(Number(x.classNo))&&Number.isFinite(Number(x.studentNo)));
+   const visibleAll=all.filter(x=>Number(x.classNo)!==100);
+   const blindAll=all.filter(x=>Number(x.classNo)===100);
    const myClass=classroomProfile?.classNo;
    const myNo=classroomProfile?.studentNo;
-   const mine=myClass?all.filter(x=>Number(x.classNo)===Number(myClass)):[];
+   const mine=isBlindClass(classroomProfile) ? blindAll : (myClass ? visibleAll.filter(x=>Number(x.classNo)===Number(myClass)) : []);
    mine.sort((a,b)=>Number(b.solved||0)-Number(a.solved||0)||Number(a.studentNo||0)-Number(b.studentNo||0));
    const list=document.getElementById('classRankList');
    if(!mine.length){list.innerHTML='<li class="rank-empty">아직 기록이 없습니다.</li>';}else{
@@ -968,32 +1012,49 @@ function refreshClassroomRanks(){
    if(classroomProfile){
      const me=mine.find(x=>Number(x.studentNo)===Number(myNo));
      const idx=me?mine.indexOf(me)+1:null;
-     const myRankSummary=document.getElementById('myRankSummary'); if(myRankSummary) myRankSummary.innerHTML=idx?`${nicknameHTML(classroomProfile.nickname)} · ${RANK_MONTH_LABEL} ${Number(me?.solved||0)}개`:`${nicknameHTML(classroomProfile.nickname)} · 기록을 저장하는 중`;
-     document.getElementById('myRankNumber').textContent=idx?`${idx}위`:'—';
+     const myRankSummary=document.getElementById('myRankSummary');
+     if(myRankSummary) myRankSummary.innerHTML=idx?`${nicknameHTML(classroomProfile.nickname)} · ${RANK_MONTH_LABEL} ${Number(me?.solved||0)}개`:`${nicknameHTML(classroomProfile.nickname)} · 기록을 저장하는 중`;
    }
    const byClass={};
-   all.forEach(x=>{const c=Number(x.classNo);if(!byClass[c])byClass[c]=[];byClass[c].push(Number(x.solved||0));});
-   const classes=Object.entries(byClass).map(([c,vals])=>({c:Number(c),avg:vals.reduce((a,b)=>a+b,0)/vals.length,count:vals.length,total:vals.reduce((a,b)=>a+b,0)})).sort((a,b)=>b.avg-a.avg||b.total-a.total||a.c-b.c);
-   const ci=myClass?classes.findIndex(x=>x.c===Number(myClass))+1:null;
-   const classSummary=document.getElementById('classRankSummary');
-   if(classSummary){
-     classSummary.textContent=ci?`${ci}위 / ${classes.length}개 반 · 평균 ${classes[ci-1].avg.toFixed(1)}문제`:'—';
-   }
-   const overall=document.getElementById('classOverallRankList');
-   if(!classes.length){
-     overall.innerHTML='<li class="rank-empty">아직 기록이 없습니다.</li>';
+   visibleAll.forEach(x=>{const c=Number(x.classNo);if(!byClass[c])byClass[c]=[];byClass[c].push(Number(x.solved||0));});
+   const classes=Object.keys(byClass).map(Number).sort((a,b)=>a-b).map(c=>({c,avg:byClass[c].reduce((a,b)=>a+b,0)/byClass[c].length}));
+   const myClassRank=document.getElementById('myClassRank');
+   const classSummary=document.getElementById('classSummary');
+   if(isBlindClass(classroomProfile)){
+     if(myClassRank) myClassRank.textContent='블라인드 반';
+     if(classSummary) classSummary.textContent='100반 · 전체 반 순위에서 제외';
    }else{
-     overall.innerHTML=classes.map((x,i)=>`<li class="${myClass&&x.c===Number(myClass)?'me':''}"><span>${i+1}위&nbsp; ${x.c}반 <small>(${x.count}명)</small></span><strong>${x.avg.toFixed(1)}문제</strong></li>`).join('');
+     const ci=classes.findIndex(x=>x.c===Number(myClass));
+     if(myClassRank) myClassRank.textContent=ci>=0?`${ci+1}위 / ${classes.length}개 반`:'반 순위 집계 중';
+     if(classSummary) classSummary.textContent=myClass?`${Number(myClass)}반 · 전체 반 순위`:'반 정보를 입력해 주세요.';
    }
-   const title=document.getElementById('myClassRankTitle');
-   if(title) title.textContent='우리 반 평균 해결 문항 수';
  }).catch(()=>{});
 }
-// 처음 실행했거나 반·번호가 아직 확정되지 않은 경우 입력 영역을 은은하게 강조한다.
-renderProfile();
-const rankMonthLabelEl=document.getElementById('rankMonthLabel');
-if(rankMonthLabelEl) rankMonthLabelEl.textContent=RANK_MONTH_LABEL;
-setStudentAttention(!(classroomProfile?.classNo && classroomProfile?.studentNo));
+// 게임 진행 포인트: 기존 세로셈 점수와 분리하여, 문제를 완전히 해결할 때만 +10P
+let gamePoints=0;
+let gameStage=1;
+let stageProblemCount=0;
+let currentProblemPoints=10;
+const POINTS_PER_PROBLEM=10;
+const STAGE1_PROBLEMS=problems.length;
+
+function updateGameHud(){
+  const p=document.getElementById('gamePoints');
+  const prog=document.getElementById('gameProgress');
+  const cnt=document.getElementById('gameCount');
+  const title=document.querySelector('.game-hud .hud-title');
+  if(p) p.textContent=gamePoints;
+  if(prog){
+    const pct = gameStage===1
+      ? (stageProblemCount/STAGE1_PROBLEMS)*100
+      : Math.min((stageProblemCount/STAGE1_PROBLEMS)*100,100);
+    prog.style.width=pct+'%';
+  }
+  if(cnt) cnt.textContent=gameStage+'단계 · '+(stageProblemCount+1)+'번째 문제';
+  if(title) title.textContent=customProblem ? '식 보기' : (gameStage===1 ? '1단계 탐험' : '2단계 탐험');
+  const cp=document.getElementById('currentProblemPoints');
+  if(cp) cp.textContent='(이번 문제 '+currentProblemPoints+'P)';
+}
 
 async function incrementSolved(){
  if(!classroomProfile || !studentRecordKey(classroomProfile)){
@@ -1041,34 +1102,6 @@ async function incrementSolved(){
  }
 }
 
-
-
-// 게임 진행 포인트: 기존 세로셈 점수와 분리하여, 문제를 완전히 해결할 때만 +10P
-let gamePoints=0;
-let gameStage=1;
-let stageProblemCount=0;
-let currentProblemPoints=10;
-const POINTS_PER_PROBLEM=10;
-const STAGE1_PROBLEMS=problems.length;
-
-function updateGameHud(){
-  const p=document.getElementById('gamePoints');
-  const prog=document.getElementById('gameProgress');
-  const cnt=document.getElementById('gameCount');
-  const title=document.querySelector('.game-hud .hud-title');
-  if(p) p.textContent=gamePoints;
-  if(prog){
-    const pct = gameStage===1
-      ? (stageProblemCount/STAGE1_PROBLEMS)*100
-      : Math.min((stageProblemCount/STAGE1_PROBLEMS)*100,100);
-    prog.style.width=pct+'%';
-  }
-  if(cnt) cnt.textContent=gameStage+'단계 · '+(stageProblemCount+1)+'번째 문제';
-  if(title) title.textContent=customProblem ? '식 보기' : (gameStage===1 ? '1단계 탐험' : '2단계 탐험');
-  const cp=document.getElementById('currentProblemPoints');
-  if(cp) cp.textContent='(이번 문제 '+currentProblemPoints+'P)';
-}
-
 async function addGamePoint(){
   gaEvent('problem_completed');
   const saved=await incrementSolved();
@@ -1097,6 +1130,36 @@ function applyWrongAnswerPenalty(){
 const $=id=>document.getElementById(id);
 const block=cls=>{const e=document.createElement('i');e.className=cls;return e};
 const put=(el,cls,n)=>{for(let i=0;i<Math.max(0,n);i++)el.appendChild(block(cls))};
+
+let presenceHeartbeatTimer=null;
+let presenceRef=null;
+async function updatePresence(){
+ if(!classroomProfile || !firebaseUid || !firebaseReady || !firebaseDb || !studentRecordKey(classroomProfile)) return;
+ try{
+   if(!presenceRef) presenceRef=firebaseDb.ref(`${MONTHLY_RANK_PATH}/presence/${firebaseUid}`);
+   await presenceRef.set({
+     classNo:Number(classroomProfile.classNo),
+     studentNo:Number(classroomProfile.studentNo),
+     nickname:String(classroomProfile.nickname||''),
+     lastSeen:firebase.database.ServerValue.TIMESTAMP
+   });
+ }catch(e){}
+}
+async function startPresence(){
+ if(!classroomProfile) return;
+ if(!(await waitForFirebaseReady(7000))) return;
+ if(!presenceRef) presenceRef=firebaseDb.ref(`${MONTHLY_RANK_PATH}/presence/${firebaseUid}`);
+ try{ await presenceRef.onDisconnect().remove(); }catch(e){}
+ await updatePresence();
+ clearInterval(presenceHeartbeatTimer);
+ presenceHeartbeatTimer=setInterval(updatePresence,15000);
+}
+async function stopPresence(){
+ clearInterval(presenceHeartbeatTimer);
+ presenceHeartbeatTimer=null;
+ try{ if(presenceRef) await presenceRef.remove(); }catch(e){}
+}
+window.addEventListener('pagehide',()=>{ try{ if(presenceRef) presenceRef.remove(); }catch(e){} });
 
 function init(){
   updateGameHud();
@@ -1141,47 +1204,28 @@ document.getElementById('customExpression').addEventListener('keydown',e=>{
 });
 
 function makeAutoProblem(){
-  // 첫 시작 화면: 기존 방식 그대로.
-  // 세 자리 수 ÷ 한 자리 수이며, 반드시 나머지가 있도록 생성한다.
+  // 첫 화면 자동 출제: 세 자리 수 ÷ 한 자리 수이며, 반드시 나머지가 있도록 생성한다.
   let n,d;
   do {
-    n=100+Math.floor(Math.random()*900); // 100~999
-    d=2+Math.floor(Math.random()*8);     // 2~9
+    n=100+Math.floor(Math.random()*900);
+    d=2+Math.floor(Math.random()*8);
   } while(n%d===0);
   return {n,d};
 }
 
 function makeMixedAutoProblem(){
-  // 「자동 출제문제」: 아래 4가지 유형을 같은 확률로 섞어서 출제한다.
+  // 자동문제출제: 정확히 네 종류 중 하나를 랜덤 선택한다.
+  // 1) 나머지 있는 세 자리 ÷ 한 자리
+  // 2) 나머지 없는 세 자리 ÷ 한 자리
+  // 3) 나머지 있는 두 자리 ÷ 한 자리
+  // 4) 나머지 없는 두 자리 ÷ 한 자리
   const type=Math.floor(Math.random()*4);
   let n,d;
-
-  if(type===0){
-    // 나머지가 있는 세 자리 수 ÷ 한 자리 수
-    do {
-      n=100+Math.floor(Math.random()*900);
-      d=2+Math.floor(Math.random()*8);
-    } while(n%d===0);
-  }else if(type===1){
-    // 나머지가 없는 세 자리 수 ÷ 한 자리 수
-    do {
-      n=100+Math.floor(Math.random()*900);
-      d=2+Math.floor(Math.random()*8);
-    } while(n%d!==0);
-  }else if(type===2){
-    // 나머지가 있는 두 자리 수 ÷ 한 자리 수
-    do {
-      n=10+Math.floor(Math.random()*90);
-      d=2+Math.floor(Math.random()*8);
-    } while(n%d===0);
-  }else{
-    // 나머지가 없는 두 자리 수 ÷ 한 자리 수
-    do {
-      n=10+Math.floor(Math.random()*90);
-      d=2+Math.floor(Math.random()*8);
-    } while(n%d!==0);
-  }
-
+  do {
+    if(type===0 || type===1) n=100+Math.floor(Math.random()*900);
+    else n=10+Math.floor(Math.random()*90);
+    d=2+Math.floor(Math.random()*8);
+  } while(type%2===0 ? n%d===0 : n%d!==0);
   return {n,d};
 }
 
@@ -1307,8 +1351,13 @@ async function input(x){
   // product -> line -> remainder를 정확히 붙인다. 빈 줄을 만들지 않는다.
   s.rows.push({type:'calc',col:s.col,product:s.product,remainder:s.remainder});
     if((s.col-s.startCol)===(s.digits.length-1)){
-   s.finalRem=x;s.complete=true;s.stage='finish';await addGamePoint();
-     const nb=document.getElementById('nextProblem'); if(nb) nb.style.display='block';render();return;
+   s.finalRem=x;s.complete=true;s.stage='finish';
+   // 마지막 나머지를 누른 즉시 화면을 완료 상태로 전환한다.
+   // Firebase 저장이 지연되어도 학생의 클릭/완료 화면이 멈추지 않도록 한다.
+   render();
+   const nb=document.getElementById('nextProblem'); if(nb) nb.style.display='block';
+   void addGamePoint();
+   return;
   }
   s.stage='bring';
   s.product=null;
@@ -1485,6 +1534,34 @@ setStudentConnectedState('login');
 // 반드시 나머지가 있도록 하며, 이후의 기존 문제 진행 구조는 그대로 유지한다.
 problems[0]=makeAutoProblem();
 init();
+</script>
+
+<script id="night-lock-script">
+(function(){
+  const overlay=document.getElementById('nightLockOverlay');
+  if(!overlay) return;
+  function isNightLockTime(){
+    const h=new Date().getHours();
+    return h>=21 || h<6;
+  }
+  function updateNightLock(){
+    const locked=isNightLockTime();
+    document.body.classList.toggle('night-lock-active',locked);
+    overlay.style.display=locked?'flex':'none';
+    overlay.setAttribute('aria-hidden',locked?'false':'true');
+    if(locked){
+      overlay.setAttribute('tabindex','0');
+      try{overlay.focus({preventScroll:true});}catch(e){}
+    }else{
+      overlay.removeAttribute('tabindex');
+    }
+  }
+  updateNightLock();
+  setInterval(updateNightLock,30000);
+  ['pointerdown','pointerup','click','touchstart','touchmove','touchend','keydown','keyup','wheel','contextmenu'].forEach(type=>{
+    overlay.addEventListener(type,e=>{e.preventDefault();e.stopPropagation();},{passive:false});
+  });
+})();
 </script>
 </body>
 </html>
