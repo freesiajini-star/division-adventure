@@ -22,7 +22,11 @@ body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;backg
 h1{margin:0;font-size:34px;font-weight:900;letter-spacing:-2px}
 h1 .y{color:#ffe46b;text-shadow:0 2px 5px rgba(0,0,0,.25)} h1 .b{color:#9ad9ee;text-shadow:0 2px 5px rgba(0,0,0,.25)}
 .sub{margin:5px 0 22px;color:rgba(245,242,226,.82);text-shadow:0 1px 2px rgba(0,0,0,.45)}
-.toolbar,.tabs,.cards,.panel{background:rgba(246,241,220,.88);border:2px solid rgba(39,50,74,.12);border-radius:18px;box-shadow:0 8px 24px rgba(39,50,74,.08)}
+.toolbar,.tabs,.cards,.panel{background:rgba(246,241,220,.94);color:#27324a;border:2px solid rgba(39,50,74,.12);border-radius:18px;box-shadow:0 8px 24px rgba(39,50,74,.12)}
+.toolbar label,.panel,.cards,.tabs{color:#27324a}
+.card{color:#27324a}
+.card small{color:#50677a}
+.tabs button{color:#27324a}
 .toolbar{padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 input,select,button{font:inherit}
 input,select{padding:9px 12px;border-radius:10px;border:1px solid #aaa;background:#fff;color:#222}
@@ -33,15 +37,15 @@ input,select{padding:9px 12px;border-radius:10px;border:1px solid #aaa;backgroun
 .card{background:rgba(255,255,255,.56);padding:15px;border-radius:13px}.card small{display:block;color:#50677a}.card strong{font-size:27px}.attention-card{border:1px solid rgba(255,180,70,.45)}
 .grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:14px}
 .panel{padding:17px}.panel h2{font-size:18px;margin:0 0 13px}
-.chartWrap{position:relative;height:250px;overflow:hidden;border-radius:12px;background:rgba(255,255,255,.28);cursor:grab;touch-action:none}.chartWrap.dragging{cursor:grabbing}.chartSvg{width:100%;height:100%;display:block}.chartSvg text{font-family:"Noto Sans KR",Arial,sans-serif;fill:#50677a;font-size:11px}.chartSvg .axis{stroke:rgba(39,50,74,.38);stroke-width:1}.chartSvg .gridline{stroke:rgba(39,50,74,.12);stroke-width:1}.chartSvg .linePath{fill:none;stroke:#2d6fa3;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chartSvg .point{fill:#f3a64a;stroke:#fff;stroke-width:2}.chartSvg .barRect{fill:#58c8ed;opacity:.82}.chartHint{font-size:11px;color:#64798a;margin-top:6px}.chartActions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}.chartActions button{padding:5px 9px;border:1px solid rgba(39,50,74,.18);border-radius:8px;background:rgba(255,255,255,.7);color:#27324a;cursor:pointer;font-size:12px}.chartModal{display:none;position:fixed;inset:0;background:rgba(20,35,45,.55);z-index:1000;align-items:center;justify-content:center;padding:22px}.chartModal.open{display:flex}.chartModalBox{width:min(1100px,96vw);height:min(680px,90vh);background:#fff8e6;border-radius:20px;border:2px solid rgba(39,50,74,.16);box-shadow:0 20px 60px rgba(0,0,0,.28);padding:14px;display:flex;flex-direction:column}.chartModalHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.chartModalHead strong{font-size:18px}.chartModalClose{border:0;background:rgba(39,50,74,.08);border-radius:10px;padding:7px 11px;cursor:pointer}.chartModal .chartWrap{flex:1;height:auto;margin-top:10px;background:rgba(255,255,255,.55)}
+.chartWrap{position:relative;height:250px;overflow:hidden;border-radius:12px;background:rgba(255,255,255,.28);cursor:grab;touch-action:none}.chartWrap.dragging{cursor:grabbing}.chartSvg{width:100%;height:100%;display:block}.chartSvg text{font-family:"Noto Sans KR",Arial,sans-serif;fill:#50677a;font-size:11px}.chartSvg .axis{stroke:rgba(39,50,74,.38);stroke-width:1}.chartSvg .gridline{stroke:rgba(39,50,74,.12);stroke-width:1}.chartSvg .linePath{fill:none;stroke:#2d6fa3;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chartSvg .point{fill:#f3a64a;stroke:#fff;stroke-width:2}.chartSvg .barRect{fill:#58c8ed;opacity:.82}.chartHint{font-size:11px;color:#50677a;margin-top:6px}.chartActions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}.chartActions button{padding:5px 9px;border:1px solid rgba(39,50,74,.18);border-radius:8px;background:rgba(255,255,255,.7);color:#27324a;cursor:pointer;font-size:12px}.chartModal{display:none;position:fixed;inset:0;background:rgba(20,35,45,.55);z-index:1000;align-items:center;justify-content:center;padding:22px}.chartModal.open{display:flex}.chartModalBox{width:min(1100px,96vw);height:min(680px,90vh);background:#fff8e6;border-radius:20px;border:2px solid rgba(39,50,74,.16);box-shadow:0 20px 60px rgba(0,0,0,.28);padding:14px;display:flex;flex-direction:column}.chartModalHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.chartModalHead strong{font-size:18px}.chartModalClose{border:0;background:rgba(39,50,74,.08);border-radius:10px;padding:7px 11px;cursor:pointer}.chartModal .chartWrap{flex:1;height:auto;margin-top:10px;background:rgba(255,255,255,.55)}
 
 .list{margin-top:14px}
-table{width:100%;border-collapse:collapse;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;color:#27324a}
 th,td{padding:9px 7px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
-th{color:#50677a;font-weight:700}
+th{color:#3f5668;font-weight:800}
 tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
 .status{white-space:nowrap}.green{color:#8df0a5}.yellow{color:#ffe46b}.gray{color:#c0c0c0}.warn{color:#ffb347;font-weight:800}.badge{display:inline-block;padding:4px 7px;border-radius:8px;background:rgba(255,179,71,.14);border:1px solid rgba(255,179,71,.42);white-space:nowrap}.criteria{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,179,71,.10);border:1px solid rgba(255,179,71,.28)}.criteria div{margin:5px 0}.hit{color:#ffca78;font-weight:800}.miss{color:#aaa}
-.detail{margin-top:14px}.session{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(0,0,0,.13);margin:6px 0}
+.detail{margin-top:14px}.session{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(39,50,74,.08);color:#27324a;margin:6px 0}
 .err{margin-top:12px;padding:12px;border-radius:10px;background:rgba(180,40,40,.25);color:#ffd6d6;display:none}
 .ok{color:#a5f2b3}
 @media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}
@@ -85,7 +89,7 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
   <section class="panel list">
     <h2>학생별 활동</h2>
     <table>
-      <thead><tr><th>학생</th><th>풀이</th><th>세션</th><th>최근 풀이</th><th>상태</th><th>이용패턴</th></tr></thead>
+      <thead><tr><th>학생</th><th>전체 풀이</th><th>풀이</th><th>세션</th><th>최근 풀이</th><th>상태</th><th>이용패턴</th></tr></thead>
       <tbody id="studentsTable"></tbody>
     </table>
     <div id="detail" class="detail"></div>
@@ -179,7 +183,7 @@ function render(){
     const last=o.s[o.s.length-1];
     const label=o.risk.count>=2?`<span class="badge warn">⚠️ 이용패턴 지도 필요 · ${o.risk.count}/4 위험요소 충족</span>`:'<span class="gray">정상 범위</span>';
     return `<tr class="clickable" data-i="${i}"><td>${displayStudent(o)}</td><td>${o.risk.daily}</td><td>${o.s.length}</td><td>${fmt(last.endAt)}</td><td class="status">${statusHtml(last.endAt,dateKey)}</td><td>${label}</td></tr>`;
-  }).join('') || '<tr><td colspan="6">선택한 날짜에 실제 풀이 기록이 없습니다.</td></tr>';
+  }).join('') || '<tr><td colspan="7">선택한 날짜에 실제 풀이 기록이 없습니다.</td></tr>';
 
   document.querySelectorAll('tr.clickable').forEach(tr=>tr.onclick=()=>{
     const o=rows[Number(tr.dataset.i)];
