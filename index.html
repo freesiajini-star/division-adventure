@@ -1016,11 +1016,13 @@ async function recordSolveActivity(profile=classroomProfile){
    return false;
  }
 }
+// 학생 순위는 Firebase Realtime Database 리스너로 실시간 갱신한다.
+// 학생이 문제를 풀어 solved 값이 바뀌면 새로고침 없이 순위가 다시 그려진다.
 function refreshClassroomRanks(){
  if(!firebaseReady||!firebaseDb)return;
  const monthLabel=document.getElementById('rankMonthLabel');
  if(monthLabel) monthLabel.textContent=RANK_MONTH_LABEL;
- firebaseDb.ref(`${MONTHLY_RANK_PATH}/students`).once('value').then(snap=>{
+ firebaseDb.ref(`${MONTHLY_RANK_PATH}/students`).on('value',snap=>{
    const all=Object.values(snap.val()||{}).filter(x=>x&&Number.isFinite(Number(x.classNo))&&Number.isFinite(Number(x.studentNo)));
    const myClass=classroomProfile?.classNo;
    const myNo=classroomProfile?.studentNo;
