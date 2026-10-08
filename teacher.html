@@ -24,7 +24,7 @@ h1 .y{color:#ffe46b;text-shadow:0 2px 5px rgba(0,0,0,.25)} h1 .b{color:#9ad9ee;t
 .sub{margin:5px 0 22px;color:rgba(245,242,226,.82);text-shadow:0 1px 2px rgba(0,0,0,.45)}
 .toolbar,.tabs,.cards,.panel{background:rgba(246,241,220,.94);color:#27324a;border:2px solid rgba(39,50,74,.12);border-radius:18px;box-shadow:0 8px 24px rgba(39,50,74,.12)}
 .toolbar label,.panel,.cards,.tabs{color:#27324a}
-.card{color:#27324a}
+.card{color:#27324a}.cards .card:first-child small{color:#2d7a55}.cards .card:first-child strong{color:#187a4a}
 .card small{color:#50677a}
 .tabs button{color:#27324a}
 .toolbar{padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -227,18 +227,19 @@ function makeSvgChart(type,data,target,modal=false){
 }
 function setupChartInteractions(el,type,renderFn){
   let down=null;
-  el.addEventListener('dblclick',e=>{e.preventDefault();openChart(type)});
-  el.addEventListener('pointerdown',e=>{down={x:e.clientX,offset:chartState[type].offset};el.classList.add('dragging');el.setPointerCapture?.(e.pointerId)});
-  el.addEventListener('pointermove',e=>{if(!down)return;chartState[type].offset=down.offset-(e.clientX-down.x)/80;renderFn()});
+  const getType=()=>type||el.dataset.type;
+  el.addEventListener('dblclick',e=>{e.preventDefault();openChart(getType())});
+  el.addEventListener('pointerdown',e=>{const t=getType();down={x:e.clientX,offset:chartState[t].offset};el.classList.add('dragging');el.setPointerCapture?.(e.pointerId)});
+  el.addEventListener('pointermove',e=>{if(!down)return;const t=getType();chartState[t].offset=down.offset-(e.clientX-down.x)/80;renderFn()});
   el.addEventListener('pointerup',()=>{down=null;el.classList.remove('dragging')});
   el.addEventListener('pointercancel',()=>{down=null;el.classList.remove('dragging')});
-  el.addEventListener('wheel',e=>{e.preventDefault();chartState[type].scale=Math.max(1,Math.min(4,chartState[type].scale*(e.deltaY<0?1.15:.87)));renderFn()},{passive:false});
+  el.addEventListener('wheel',e=>{e.preventDefault();const t=getType();chartState[t].scale=Math.max(1,Math.min(4,chartState[t].scale*(e.deltaY<0?1.15:.87)));renderFn()},{passive:false});
 }
 const chartCache={daily:[],hourly:[]};
 function drawChart(type,modal=false){const target=document.getElementById(modal?'chartModalChart':type);if(!target)return;makeSvgChart(type,chartCache[type],target,modal);if(!modal&&!target.dataset.bound){setupChartInteractions(target,type,()=>drawChart(type,false));target.dataset.bound='1';}}
 function renderHourly(rows){const counts=Array(24).fill(0);rows.forEach(o=>o.s.forEach(s=>{const h=new Date(Number(s.endAt)).getHours();counts[h]++}));chartCache.hourly=counts.map((v,h)=>({v,label:`${h}시`}));drawChart('hourly');}
 function renderDaily(){const base=dateEl.value;const vals=[];for(let i=13;i>=0;i--){const key=addDaysKey(base,-i);vals.push({v:filtered(key).length,label:key.slice(5).replace('-','/').replace(/^0/,'')})}chartCache.daily=vals;drawChart('daily');}
-function openChart(type){const modal=document.getElementById('chartModal');document.getElementById('chartModalTitle').textContent=type==='daily'?'일별 추이 · 최근 14일':'일간 이용 시간대';modal.classList.add('open');modal.setAttribute('aria-hidden','false');chartState[type]={scale:1,offset:0};const target=document.getElementById('chartModalChart');target.dataset.type=type;makeSvgChart(type,chartCache[type],target,true);if(!target.dataset.bound){setupChartInteractions(target,type,()=>makeSvgChart(type,chartCache[type],target,true));target.dataset.bound='1';}}
+function openChart(type){const modal=document.getElementById('chartModal');document.getElementById('chartModalTitle').textContent=type==='daily'?'일별 추이 · 최근 14일':'일간 이용 시간대';modal.classList.add('open');modal.setAttribute('aria-hidden','false');chartState[type]={scale:1,offset:0};const target=document.getElementById('chartModalChart');target.dataset.type=type;makeSvgChart(type,chartCache[type],target,true);if(!target.dataset.bound){setupChartInteractions(target,null,()=>{const t=target.dataset.type;makeSvgChart(t,chartCache[t],target,true)});target.dataset.bound='1';}}
 function closeChart(){const modal=document.getElementById('chartModal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
 function renderAll(){render();renderDaily()}
 
