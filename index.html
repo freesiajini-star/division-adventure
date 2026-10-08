@@ -981,38 +981,34 @@ async function recordSolveActivity(profile=classroomProfile){
  const activityRef=firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}/activity/${dateKey}`);
 
  try{
-   const tx=await activityRef.transaction(current=>{
-     const data=current&&typeof current==='object'?current:{};
-     const sessions=data.sessions&&typeof data.sessions==='object'?data.sessions:{};
-     const currentSessionId=String(data.currentSessionId||'');
-     const currentSession=currentSessionId&&sessions[currentSessionId]?sessions[currentSessionId]:null;
-     const lastActiveAt=Number(currentSession?.endAt||0);
-     const sameSession=!!currentSession&&lastActiveAt>0&&(now-lastActiveAt)<ACTIVITY_SESSION_GAP_MS;
-     const sessionId=sameSession?currentSessionId:`s_${now}`;
-     const oldSession=sessions[sessionId]||{};
+   // activity 전체를 transaction으로 다시 쓰지 않고, 현재 값을 읽은 뒤
+   // 실제로 바뀌는 session 필드만 update한다.
+   // 기존 학생 레코드/기존 activity 데이터는 그대로 보존한다.
+   const snap=await activityRef.once('value');
+   const data=snap.val()&&typeof snap.val()==='object'?snap.val():{};
+   const sessions=data.sessions&&typeof data.sessions==='object'?data.sessions:{};
+   const currentSessionId=String(data.currentSessionId||'');
+   const currentSession=currentSessionId&&sessions[currentSessionId]?sessions[currentSessionId]:null;
+   const lastActiveAt=Number(currentSession?.endAt||0);
+   const sameSession=!!currentSession&&lastActiveAt>0&&(now-lastActiveAt)<ACTIVITY_SESSION_GAP_MS;
+   const sessionId=sameSession?currentSessionId:`s_${now}`;
+   const oldSession=sessions[sessionId]||{};
+   const session={
+     startAt:Number(oldSession.startAt||now),
+     endAt:now,
+     solved:Math.max(0,Number(oldSession.solved||0))+1
+   };
 
-     sessions[sessionId]={
-       startAt:Number(oldSession.startAt||now),
-       endAt:now,
-       solved:Math.max(0,Number(oldSession.solved||0))+1
-     };
-
-     return {
-       ...data,
-       sessions,
-       currentSessionId:sessionId,
-       lastActiveAt:now
-     };
+   await activityRef.update({
+     [`sessions/${sessionId}`]:session,
+     currentSessionId:sessionId,
+     lastActiveAt:now
    });
 
-   if(!tx.committed){
-     console.warn('실제 풀이 활동 기록 transaction 미완료:',key,dateKey);
-     return false;
-   }
+   console.log('실제 풀이 활동 기록 완료:',key,dateKey,sessionId,session);
    return true;
  }catch(e){
-   // 활동 기록 실패가 기존 게임 진행을 막지 않도록 별도로 처리한다.
-   console.warn('실제 풀이 활동 기록 실패:',key,e);
+   console.error('실제 풀이 활동 기록 실패:',key,e);
    return false;
  }
 }
