@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>나눗셈 탐험대 · 교사 대시보드</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2378b99a'/%3E%3Crect x='8' y='8' width='48' height='48' rx='13' fill='%23ffffff' opacity='.96'/%3E%3Ccircle cx='32' cy='19' r='4.5' fill='%23e5ad50'/%3E%3Crect x='16' y='27' width='32' height='7' rx='3.5' fill='%233c8567'/%3E%3Ccircle cx='32' cy='44' r='4.5' fill='%2378b99a'/%3E%3C/svg%3E">
 <style>
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;color:#f4f0df;font-family:"Noto Sans KR",Arial,sans-serif;background:
@@ -31,7 +32,7 @@ h1 .y{color:#ffe46b;text-shadow:0 2px 5px rgba(0,0,0,.25)} h1 .b{color:#9ad9ee;t
 input,select,button{font:inherit}
 input,select{padding:9px 12px;border-radius:10px;border:1px solid #aaa;background:#fff;color:#222}
 .tabs{margin-top:14px;padding:8px;display:flex;gap:7px;flex-wrap:wrap}
-.tabs button{border:0;border-radius:10px;padding:8px 15px;background:transparent;color:#eee;cursor:pointer}
+.tabs button{border:0;border-radius:10px;padding:8px 15px;background:transparent;color:#27324a;cursor:pointer;font-weight:800}
 .tabs button.active{background:#ffe46b;color:#183f32;font-weight:800}
 .cards{margin-top:14px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .card{background:rgba(255,255,255,.56);padding:15px;border-radius:13px}.card small{display:block;color:#50677a}.card strong{font-size:27px}.attention-card{border:1px solid rgba(255,180,70,.45)}
@@ -47,7 +48,7 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
 .status{white-space:nowrap}.statusSignal{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-weight:800}.statusSignal i{display:inline-block;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px rgba(39,50,74,.12)}.statusSignal.active{color:#138a45}.statusSignal.active i{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.18),0 0 8px rgba(34,197,94,.35)}.statusSignal.paused{color:#a86d00}.statusSignal.paused i{background:#f5b800;box-shadow:0 0 0 2px rgba(245,184,0,.18),0 0 8px rgba(245,184,0,.28)}.statusSignal.inactive{color:#52657a}.statusSignal.inactive i{background:#8c98a5;box-shadow:0 0 0 2px rgba(82,101,122,.14)}.green{color:#168f4a}.yellow{color:#b97800}.gray{color:#52657a}.warn{color:#d46f00;font-weight:800}.badge{display:inline-block;padding:4px 7px;border-radius:8px;background:rgba(255,179,71,.14);border:1px solid rgba(255,179,71,.42);white-space:nowrap}.criteria{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,179,71,.10);border:1px solid rgba(255,179,71,.28)}.criteria div{margin:5px 0}.hit{color:#ffca78;font-weight:800}.miss{color:#68737d}
 .detail{margin-top:14px}.session{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(39,50,74,.08);color:#27324a;margin:6px 0}
 .err{margin-top:12px;padding:12px;border-radius:10px;background:rgba(180,40,40,.25);color:#ffd6d6;display:none}
-.ok{color:#a5f2b3}
+.ok{color:#236342;font-weight:800}
 @media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}.wrap{padding:18px 12px}h1{font-size:28px}table{font-size:13px}.status{white-space:normal}}
 </style>
@@ -62,11 +63,7 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
     <span id="connection" class="ok">Firebase 연결 준비 중…</span>
   </div>
 
-  <div class="tabs" id="tabs">
-    <button class="active" data-class="all">전체</button>
-    <button data-class="1">1반</button><button data-class="2">2반</button>
-    <button data-class="3">3반</button><button data-class="4">4반</button><button data-class="5">5반</button>
-  </div>
+  <div class="tabs" id="tabs"><button class="active" data-class="all">전체</button></div>
 
   <div class="cards">
     <div class="card"><small>실시간 학습자 수</small><strong id="students">0명</strong></div>
@@ -76,6 +73,14 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
     <div class="card attention-card"><small>이용패턴 지도 필요</small><strong id="attentionCount">0명</strong></div>
   </div>
 
+  <section class="panel list">
+    <h2>학생별 활동</h2><div class="session-note">학습 회차: 30분 이상 학습이 중단되면 새로운 학습 회차로 기록됩니다.</div>
+    <table>
+      <thead><tr><th>학생</th><th>누적 문제 수</th><th>오늘 푼 문제 수</th><th>당일 학습 회차</th><th>최종 학습 시각</th><th>상태</th><th>이용패턴 주의 여부</th></tr></thead>
+      <tbody id="studentsTable"></tbody>
+    </table>
+    <div id="detail" class="detail"></div>
+  </section>
   <div class="grid">
     <section class="panel">
       <h2>일별 추이 · 최근 14일</h2>
@@ -87,14 +92,6 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
     </section>
   </div>
 
-  <section class="panel list">
-    <h2>학생별 활동</h2><div class="session-note">학습 회차: 30분 이상 학습이 중단되면 새로운 학습 회차로 기록됩니다.</div>
-    <table>
-      <thead><tr><th>학생</th><th>누적 문제 수</th><th>오늘 푼 문제 수</th><th>당일 학습 회차</th><th>최종 학습 시각</th><th>상태</th><th>이용패턴 주의 여부</th></tr></thead>
-      <tbody id="studentsTable"></tbody>
-    </table>
-    <div id="detail" class="detail"></div>
-  </section>
   <div id="error" class="err"></div>
 </div>
 <div id="chartModal" class="chartModal" aria-hidden="true"><div class="chartModalBox"><div class="chartModalHead"><strong id="chartModalTitle">그래프 확대</strong><button type="button" class="chartModalClose" id="chartModalClose">닫기</button></div><div id="chartModalChart" class="chartWrap"></div><div class="chartHint">마우스/손가락으로 드래그 · 휠로 확대/축소 · 초기화 버튼으로 원래 보기</div><div class="chartActions"><button type="button" id="chartReset">초기화</button></div></div></div>
@@ -241,7 +238,29 @@ function renderHourly(rows){const counts=Array(24).fill(0);rows.forEach(o=>o.s.f
 function renderDaily(){const base=dateEl.value;const vals=[];for(let i=13;i>=0;i--){const key=addDaysKey(base,-i);vals.push({v:filtered(key).length,label:key.slice(5).replace('-','/').replace(/^0/,'')})}chartCache.daily=vals;drawChart('daily');}
 function openChart(type){const modal=document.getElementById('chartModal');document.getElementById('chartModalTitle').textContent=type==='daily'?'일별 추이 · 최근 14일':'일간 이용 시간대';modal.classList.add('open');modal.setAttribute('aria-hidden','false');chartState[type]={scale:1,offset:0};const target=document.getElementById('chartModalChart');target.dataset.type=type;makeSvgChart(type,chartCache[type],target,true);if(!target.dataset.bound){setupChartInteractions(target,null,()=>{const t=target.dataset.type;makeSvgChart(t,chartCache[t],target,true)});target.dataset.bound='1';}}
 function closeChart(){const modal=document.getElementById('chartModal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
-function renderAll(){render();renderDaily()}
+function renderTabs(){
+  const tabs=document.getElementById('tabs');
+  const classes=[...new Set(Object.values(allStudents)
+    .filter(x=>{
+      if(!x)return false;
+      const solved=Number(x.solved||0);
+      const activity=x.activity&&Object.values(x.activity).some(d=>d&&d.sessions&&Object.keys(d.sessions).length);
+      return solved>0 || activity;
+    })
+    .map(x=>Number(x.classNo))
+    .filter(n=>Number.isFinite(n) && n>0))].sort((a,b)=>a-b);
+
+  if(selectedClass!=='all' && !classes.includes(Number(selectedClass))) selectedClass='all';
+  tabs.innerHTML='<button data-class="all">전체</button>'+classes.map(c=>`<button data-class="${c}">${c}반</button>`).join('');
+  tabs.querySelector(`[data-class="${selectedClass}"]`)?.classList.add('active');
+  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    tabs.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    selectedClass=b.dataset.class;
+    renderAll();
+  });
+}
+function renderAll(){renderTabs();render();renderDaily()}
 
 document.querySelectorAll('[data-open-chart]').forEach(b=>b.onclick=()=>openChart(b.dataset.openChart));
 document.getElementById('chartModalClose').onclick=closeChart;
