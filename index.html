@@ -1103,9 +1103,13 @@ async function incrementSolved(){
    document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
    refreshClassroomRanks();
 
-   // 기존 solved 저장이 성공한 뒤에만 실제 풀이 활동을 추가한다.
-   // 활동 기록 실패 때문에 기존 게임은 실패하지 않는다.
-   void recordSolveActivity(profile);
+   // 기존 solved 저장이 성공한 뒤에 실제 풀이 활동을 기록한다.
+   // activity 기록이 완료된 뒤 incrementSolved를 끝내므로,
+   // 다음 session 판정이 누락되지 않도록 한다.
+   const activitySaved=await recordSolveActivity(profile);
+   if(!activitySaved){
+     console.error('문항 수 저장은 성공했지만 실제 풀이 활동 기록에 실패했습니다:',key);
+   }
 
    return true;
  }catch(e){
