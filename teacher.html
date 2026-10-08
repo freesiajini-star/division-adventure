@@ -44,7 +44,7 @@ table{width:100%;border-collapse:collapse;font-size:14px;color:#27324a}
 th,td{padding:9px 7px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
 th{color:#3f5668;font-weight:800}
 tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
-.status{white-space:nowrap}.green{color:#8df0a5}.yellow{color:#ffe46b}.gray{color:#c0c0c0}.warn{color:#ffb347;font-weight:800}.badge{display:inline-block;padding:4px 7px;border-radius:8px;background:rgba(255,179,71,.14);border:1px solid rgba(255,179,71,.42);white-space:nowrap}.criteria{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,179,71,.10);border:1px solid rgba(255,179,71,.28)}.criteria div{margin:5px 0}.hit{color:#ffca78;font-weight:800}.miss{color:#aaa}
+.status{white-space:nowrap}.statusSignal{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-weight:800}.statusSignal i{display:inline-block;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px rgba(39,50,74,.12)}.statusSignal.active{color:#207a3d}.statusSignal.active i{background:#31b85a}.statusSignal.paused{color:#8a6800}.statusSignal.paused i{background:#e5b92f}.statusSignal.inactive{color:#66727e}.statusSignal.inactive i{background:#aeb7bf}.green{color:#8df0a5}.yellow{color:#ffe46b}.gray{color:#5f6b76}.warn{color:#ffb347;font-weight:800}.badge{display:inline-block;padding:4px 7px;border-radius:8px;background:rgba(255,179,71,.14);border:1px solid rgba(255,179,71,.42);white-space:nowrap}.criteria{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,179,71,.10);border:1px solid rgba(255,179,71,.28)}.criteria div{margin:5px 0}.hit{color:#ffca78;font-weight:800}.miss{color:#68737d}
 .detail{margin-top:14px}.session{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(39,50,74,.08);color:#27324a;margin:6px 0}
 .err{margin-top:12px;padding:12px;border-radius:10px;background:rgba(180,40,40,.25);color:#ffd6d6;display:none}
 .ok{color:#a5f2b3}
@@ -89,7 +89,7 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
   <section class="panel list">
     <h2>학생별 활동</h2><div class="session-note">세션: 30분 이상 학습이 중단되면 새로운 세션으로 기록됩니다.</div>
     <table>
-      <thead><tr><th>학생</th><th>누적 문제 수</th><th>문제 수</th><th>당일 학습 회차</th><th>상태</th><th>이용패턴 주의 여부</th></tr></thead>
+      <thead><tr><th>학생</th><th>누적 문제 수</th><th>오늘 푼 문제 수</th><th>당일 학습 회차</th><th>상태</th><th>이용패턴 주의 여부</th></tr></thead>
       <tbody id="studentsTable"></tbody>
     </table>
     <div id="detail" class="detail"></div>
@@ -163,9 +163,9 @@ function filtered(dateKey){
     .filter(o=>o.s.length && (selectedClass==='all'||Number(o.x.classNo)===Number(selectedClass)));
 }
 function statusHtml(lastEnd,dateKey){
-  if(dateKey!==dateKeyLocal(new Date())) return '<span class="gray">⚪ 활동 종료</span>';
+  if(dateKey!==dateKeyLocal(new Date())) return '<span class="statusSignal inactive"><i></i>활동 없음</span>';
   const gap=Date.now()-Number(lastEnd||0);
-  return gap<=120000?'<span class="green">학습 중</span>':gap<=600000?'<span class="yellow">잠시 멈춤</span>':'<span class="gray">활동 없음</span>';
+  return gap<=120000?'<span class="statusSignal active"><i></i>학습 중</span>':gap<=600000?'<span class="statusSignal paused"><i></i>잠시 멈춤</span>':'<span class="statusSignal inactive"><i></i>활동 없음</span>';
 }
 function riskBadge(risk){return risk.count>=2?`<span class="badge warn">⚠️ ${risk.count}/4</span>`:'<span class="gray">—</span>'}
 function render(){
