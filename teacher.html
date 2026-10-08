@@ -69,7 +69,7 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
   </div>
 
   <div class="cards">
-    <div class="card"><small>실제 풀이 학생</small><strong id="students">0명</strong></div>
+    <div class="card"><small>실시간 학습자 수</small><strong id="students">0명</strong></div>
     <div class="card"><small>총 풀이 문제</small><strong id="solves">0문제</strong></div>
     <div class="card"><small>총 세션</small><strong id="sessions">0회</strong></div>
     <div class="card attention-card"><small>이용패턴 지도 필요</small><strong id="attentionCount">0명</strong></div>
@@ -87,9 +87,9 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
   </div>
 
   <section class="panel list">
-    <h2>학생별 활동</h2>
+    <h2>학생별 활동</h2><div class="session-note">세션: 30분 이상 학습이 중단되면 새로운 세션으로 기록됩니다.</div>
     <table>
-      <thead><tr><th>학생</th><th>전체 풀이</th><th>풀이</th><th>세션</th><th>최근 풀이</th><th>상태</th><th>이용패턴</th></tr></thead>
+      <thead><tr><th>학생</th><th>누적 문제 수</th><th>문제 수</th><th>당일 학습 회차</th><th>상태</th><th>이용패턴 주의 여부</th></tr></thead>
       <tbody id="studentsTable"></tbody>
     </table>
     <div id="detail" class="detail"></div>
@@ -165,7 +165,7 @@ function filtered(dateKey){
 function statusHtml(lastEnd,dateKey){
   if(dateKey!==dateKeyLocal(new Date())) return '<span class="gray">⚪ 활동 종료</span>';
   const gap=Date.now()-Number(lastEnd||0);
-  return gap<=120000?'<span class="green">🟢 활동 중</span>':gap<=600000?'<span class="yellow">🟡 잠시 멈춤</span>':'<span class="gray">⚪ 활동 없음</span>';
+  return gap<=120000?'<span class="green">학습 중</span>':gap<=600000?'<span class="yellow">잠시 멈춤</span>':'<span class="gray">활동 없음</span>';
 }
 function riskBadge(risk){return risk.count>=2?`<span class="badge warn">⚠️ ${risk.count}/4</span>`:'<span class="gray">—</span>'}
 function render(){
@@ -182,8 +182,8 @@ function render(){
   body.innerHTML=rows.map((o,i)=>{
     const last=o.s[o.s.length-1];
     const label=o.risk.count>=2?`<span class="badge warn">⚠️ 이용패턴 지도 필요 · ${o.risk.count}/4 위험요소 충족</span>`:'<span class="gray">정상 범위</span>';
-    return `<tr class="clickable" data-i="${i}"><td>${displayStudent(o)}</td><td>${o.risk.daily}</td><td>${o.s.length}</td><td>${fmt(last.endAt)}</td><td class="status">${statusHtml(last.endAt,dateKey)}</td><td>${label}</td></tr>`;
-  }).join('') || '<tr><td colspan="7">선택한 날짜에 실제 풀이 기록이 없습니다.</td></tr>';
+    return `<tr class="clickable" data-i="${i}"><td>${displayStudent(o)}</td><td>${Number(o.x.solved||0)}</td><td>${o.risk.daily}</td><td>${o.s.length}회차</td><td class="status">${statusHtml(last.endAt,dateKey)}</td><td>${label}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">선택한 날짜에 학습 기록이 없습니다.</td></tr>';
 
   document.querySelectorAll('tr.clickable').forEach(tr=>tr.onclick=()=>{
     const o=rows[Number(tr.dataset.i)];
