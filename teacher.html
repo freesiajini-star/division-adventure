@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>나눗셈 탐험대 · 교사 대시보드</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#183f32;color:#f5f0d8;font-family:"Noto Sans KR",Arial,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:9px 9px}
+.wrap{max-width:1250px;margin:0 auto;padding:28px 22px 50px}
+h1{margin:0;font-size:34px;font-weight:900;letter-spacing:-2px}
+h1 .y{color:#ffe46b} h1 .b{color:#77cfff}
+.sub{margin:5px 0 22px;color:#d8d2b9}
+.toolbar,.tabs,.cards,.panel{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:18px}
+.toolbar{padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+input,select,button{font:inherit}
+input,select{padding:9px 12px;border-radius:10px;border:1px solid #aaa;background:#fff;color:#222}
+.tabs{margin-top:14px;padding:8px;display:flex;gap:7px;flex-wrap:wrap}
+.tabs button{border:0;border-radius:10px;padding:8px 15px;background:transparent;color:#eee;cursor:pointer}
+.tabs button.active{background:#ffe46b;color:#183f32;font-weight:800}
+.cards{margin-top:14px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{background:rgba(0,0,0,.14);padding:15px;border-radius:13px}.card small{display:block;color:#cfcab5}.card strong{font-size:27px}.attention-card{border:1px solid rgba(255,180,70,.45)}
+.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:14px}
+.panel{padding:17px}.panel h2{font-size:18px;margin:0 0 13px}
+.chart{height:210px;display:flex;align-items:flex-end;gap:7px;padding:8px 4px 25px;border-bottom:1px solid rgba(255,255,255,.2)}
+.bar{flex:1;background:#77cfff;border-radius:6px 6px 0 0;min-height:3px;position:relative}
+.bar span{position:absolute;bottom:-23px;left:50%;transform:translateX(-50%);font-size:10px;color:#d8d2b9;white-space:nowrap}
+.line{height:180px;position:relative;border-bottom:1px solid rgba(255,255,255,.2);display:flex;align-items:flex-end;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;background:#ffe46b;position:relative;margin-bottom:var(--h)}
+.list{margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 7px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
+th{color:#d8d2b9;font-weight:600}
+tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(255,255,255,.08)}
+.status{white-space:nowrap}.green{color:#8df0a5}.yellow{color:#ffe46b}.gray{color:#c0c0c0}.warn{color:#ffb347;font-weight:800}.badge{display:inline-block;padding:4px 7px;border-radius:8px;background:rgba(255,179,71,.14);border:1px solid rgba(255,179,71,.42);white-space:nowrap}.criteria{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,179,71,.10);border:1px solid rgba(255,179,71,.28)}.criteria div{margin:5px 0}.hit{color:#ffca78;font-weight:800}.miss{color:#aaa}
+.detail{margin-top:14px}.session{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(0,0,0,.13);margin:6px 0}
+.err{margin-top:12px;padding:12px;border-radius:10px;background:rgba(180,40,40,.25);color:#ffd6d6;display:none}
+.ok{color:#a5f2b3}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}.wrap{padding:18px 12px}h1{font-size:28px}table{font-size:13px}.status{white-space:normal}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="y">나눗셈</span> <span class="b">탐험대</span></h1>
+  <div class="sub">교사 대시보드 · 실제 문제 풀이 활동만 기록합니다.</div>
+
+  <div class="toolbar">
+    <label>날짜 <input id="date" type="date"></label>
+    <span id="connection" class="ok">Firebase 연결 준비 중…</span>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="active" data-class="all">전체</button>
+    <button data-class="1">1반</button><button data-class="2">2반</button>
+    <button data-class="3">3반</button><button data-class="4">4반</button><button data-class="5">5반</button>
+  </div>
+
+  <div class="cards">
+    <div class="card"><small>실제 풀이 학생</small><strong id="students">0명</strong></div>
+    <div class="card"><small>총 풀이 문제</small><strong id="solves">0문제</strong></div>
+    <div class="card"><small>총 세션</small><strong id="sessions">0회</strong></div>
+    <div class="card attention-card"><small>이용패턴 지도 필요</small><strong id="attentionCount">0명</strong></div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>일별 추이 · 최근 14일</h2>
+      <div id="daily" class="line"></div>
+    </section>
+    <section class="panel">
+      <h2>일간 이용 시간대</h2>
+      <div id="hourly" class="chart"></div>
+    </section>
+  </div>
+
+  <section class="panel list">
+    <h2>학생별 활동</h2>
+    <table>
+      <thead><tr><th>학생</th><th>풀이</th><th>세션</th><th>최근 풀이</th><th>상태</th><th>이용패턴</th></tr></thead>
+      <tbody id="studentsTable"></tbody>
+    </table>
+    <div id="detail" class="detail"></div>
+  </section>
+  <div id="error" class="err"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey:"AIzaSyAUyC6n6NwABZr2NqLFCpCTNY1XfXDrX7k",
+  authDomain:"division-adventure.firebaseapp.com",
+  databaseURL:"https://division-adventure-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"division-adventure",
+  storageBucket:"division-adventure.firebasestorage.app",
+  messagingSenderId:"214361536617",
+  appId:"1:214361536617:web:b80f5ac9183bd906e38af8"
+};
+const MONTHLY_RANK_PATH='thirdGrade/monthly/2026-10';
+const RISK_RULES={
+  daily500:{label:'하루 500문제 이상'},
+  threeDays300:{label:'최근 3일 연속 하루 300문제 이상'},
+  session200:{label:'한 세션 200문제 이상'},
+  sevenSessions:{label:'하루 7세션 이상'}
+};
+let db=null, allStudents={}, selectedClass='all';
+const dateEl=document.getElementById('date');
+
+function pad(n){return String(n).padStart(2,'0')}
+function dateKeyLocal(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function parseDateKey(key){const [y,m,d]=String(key).split('-').map(Number); return new Date(y,m-1,d,12,0,0)}
+function addDaysKey(key,delta){const d=parseDateKey(key); d.setDate(d.getDate()+delta); return dateKeyLocal(d)}
+const today=new Date();
+dateEl.value=dateKeyLocal(today);
+
+function showError(e){
+  const el=document.getElementById('error'); el.style.display='block';
+  el.textContent='Firebase 오류: '+(e?.message||e);
+  document.getElementById('connection').textContent='연결 실패';
+  document.getElementById('connection').className='';
+}
+function fmt(ts){
+  if(!ts)return '-';
+  return new Date(Number(ts)).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+function displayStudent(o){return `${o.x.nickname||'동물'} (${o.x.classNo}-${pad(Number(o.x.studentNo)||0)})`}
+function sessionsFor(student,dateKey){
+  return Object.values(student?.activity?.[dateKey]?.sessions||{})
+    .filter(x=>x&&Number(x.endAt))
+    .sort((a,b)=>Number(a.startAt)-Number(b.startAt));
+}
+function daySolved(student,dateKey){return sessionsFor(student,dateKey).reduce((sum,s)=>sum+Number(s.solved||0),0)}
+function riskFor(student,dateKey){
+  const s=sessionsFor(student,dateKey);
+  const daily=daySolved(student,dateKey);
+  const last3=[dateKey,addDaysKey(dateKey,-1),addDaysKey(dateKey,-2)].map(k=>daySolved(student,k));
+  const hit={
+    daily500:daily>=500,
+    threeDays300:last3.every(v=>v>=300),
+    session200:s.some(x=>Number(x.solved||0)>=200),
+    sevenSessions:s.length>=7
+  };
+  const count=Object.values(hit).filter(Boolean).length;
+  return {hit,count,daily,sessionMax:Math.max(0,...s.map(x=>Number(x.solved||0))),sessions:s.length};
+}
+function filtered(dateKey){
+  return Object.entries(allStudents).map(([key,x])=>({key,x,s:sessionsFor(x,dateKey),risk:riskFor(x,dateKey)}))
+    .filter(o=>o.s.length && (selectedClass==='all'||Number(o.x.classNo)===Number(selectedClass)));
+}
+function statusHtml(lastEnd,dateKey){
+  if(dateKey!==dateKeyLocal(new Date())) return '<span class="gray">⚪ 활동 종료</span>';
+  const gap=Date.now()-Number(lastEnd||0);
+  return gap<=120000?'<span class="green">🟢 활동 중</span>':gap<=600000?'<span class="yellow">🟡 잠시 멈춤</span>':'<span class="gray">⚪ 활동 없음</span>';
+}
+function riskBadge(risk){return risk.count>=2?`<span class="badge warn">⚠️ ${risk.count}/4</span>`:'<span class="gray">—</span>'}
+function render(){
+  const dateKey=dateEl.value;
+  const rows=filtered(dateKey);
+  let total=0,sess=0,attention=0;
+  rows.forEach(o=>{sess+=o.s.length; total+=o.s.reduce((a,b)=>a+Number(b.solved||0),0); if(o.risk.count>=2)attention++});
+  document.getElementById('students').textContent=rows.length+'명';
+  document.getElementById('solves').textContent=total+'문제';
+  document.getElementById('sessions').textContent=sess+'회';
+  document.getElementById('attentionCount').textContent=attention+'명';
+
+  const body=document.getElementById('studentsTable');
+  body.innerHTML=rows.map((o,i)=>{
+    const last=o.s[o.s.length-1];
+    const label=o.risk.count>=2?`<span class="badge warn">⚠️ 이용패턴 지도 필요 · ${o.risk.count}/4 위험요소 충족</span>`:'<span class="gray">정상 범위</span>';
+    return `<tr class="clickable" data-i="${i}"><td>${displayStudent(o)}</td><td>${o.risk.daily}</td><td>${o.s.length}</td><td>${fmt(last.endAt)}</td><td class="status">${statusHtml(last.endAt,dateKey)}</td><td>${label}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">선택한 날짜에 실제 풀이 기록이 없습니다.</td></tr>';
+
+  document.querySelectorAll('tr.clickable').forEach(tr=>tr.onclick=()=>{
+    const o=rows[Number(tr.dataset.i)];
+    const r=o.risk;
+    const riskTitle=r.count>=2?`<div class="criteria"><strong>⚠️ 이용패턴 지도 필요 · ${r.count}/4 위험요소 충족</strong><div class="hit">${r.hit.daily500?'✓':'—'} 하루 500문제 이상 (${r.daily}문제)</div><div class="${r.hit.threeDays300?'hit':'miss'}">${r.hit.threeDays300?'✓':'—'} 최근 3일 연속 하루 300문제 이상</div><div class="${r.hit.session200?'hit':'miss'}">${r.hit.session200?'✓':'—'} 한 세션 200문제 이상 (최대 ${r.sessionMax}문제)</div><div class="${r.hit.sevenSessions?'hit':'miss'}">${r.hit.sevenSessions?'✓':'—'} 하루 7세션 이상 (${r.sessions}세션)</div></div>`:'<div class="criteria"><strong>이용패턴 지도 필요 기준: 해당 없음</strong></div>';
+    document.getElementById('detail').innerHTML='<h2>'+displayStudent(o)+' · 세션</h2>'+riskTitle+o.s.map((s,j)=>`<div class="session"><span>${j+1}세션 · ${fmt(s.startAt)} ~ ${fmt(s.endAt)}</span><strong>${Number(s.solved||0)}문제</strong></div>`).join('');
+  });
+  renderHourly(rows);
+}
+function renderHourly(rows){
+  const counts=Array(24).fill(0);
+  rows.forEach(o=>o.s.forEach(s=>{counts[new Date(Number(s.endAt)).getHours()]++}));
+  const max=Math.max(1,...counts);
+  document.getElementById('hourly').innerHTML=counts.map((v,h)=>`<div class="bar" style="height:${Math.max(3,v/max*175)}px"><span>${h}시</span></div>`).join('');
+}
+function renderDaily(){
+  const base=dateEl.value; const vals=[];
+  for(let i=13;i>=0;i--){const key=addDaysKey(base,-i); vals.push({key,n:filtered(key).length})}
+  const max=Math.max(1,...vals.map(v=>v.n));
+  document.getElementById('daily').innerHTML=vals.map(v=>`<div class="dot" title="${v.key}: ${v.n}명" style="--h:${(v.n/max)*155}px"></div>`).join('');
+}
+function renderAll(){render();renderDaily()}
+
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); selectedClass=b.dataset.class; renderAll();
+});
+dateEl.onchange=renderAll;
+
+try{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.database();
+  firebase.auth().signInAnonymously().then(()=>{
+    document.getElementById('connection').textContent='Firebase 연결됨 · 실시간';
+    db.ref(MONTHLY_RANK_PATH+'/students').on('value',snap=>{allStudents=snap.val()||{}; renderAll()},showError);
+  }).catch(showError);
+}catch(e){showError(e)}
+</script>
+
+</body>
+</html>
