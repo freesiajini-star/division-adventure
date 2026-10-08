@@ -1073,14 +1073,47 @@ async function incrementSolved(){
    const ref=firebaseDb.ref(`${MONTHLY_RANK_PATH}/students/${key}`);
    // 기존 방식 그대로 현재 solved에 정확히 +1 한다.
    // 중요: 기존 레코드의 다른 필드는 모두 보존한다.
+   // solved와 activity를 같은 transaction에서 함께 저장한다.
+   // 기존 students/{key} 가지 안에서만 변경하므로 별도 Firebase 가지를 만들지 않는다.
+   const activityNow=Date.now();
+   const activityDate=activityDateKey(new Date(activityNow));
    const tx=await ref.transaction(current=>{
      const existing=current&&typeof current==='object'?current:{};
+
+     const oldActivity=existing.activity&&typeof existing.activity==='object'?existing.activity:{};
+     const oldDay=oldActivity[activityDate]&&typeof oldActivity[activityDate]==='object'?oldActivity[activityDate]:{};
+     const oldSessions=oldDay.sessions&&typeof oldDay.sessions==='object'?oldDay.sessions:{};
+     const oldCurrentId=String(oldDay.currentSessionId||'');
+     const oldCurrent=oldCurrentId&&oldSessions[oldCurrentId]?oldSessions[oldCurrentId]:null;
+     const oldEndAt=Number(oldCurrent?.endAt||0);
+     const sameSession=!!oldCurrent&&oldEndAt>0&&(activityNow-oldEndAt)<ACTIVITY_SESSION_GAP_MS;
+     const sessionId=sameSession?oldCurrentId:`s_${activityNow}`;
+     const oldSession=oldSessions[sessionId]&&typeof oldSessions[sessionId]==='object'?oldSessions[sessionId]:{};
+
+     const sessions={...oldSessions};
+     sessions[sessionId]={
+       startAt:Number(oldSession.startAt||activityNow),
+       endAt:activityNow,
+       solved:Math.max(0,Number(oldSession.solved||0))+1
+     };
+
+     const activity={
+       ...oldActivity,
+       [activityDate]:{
+         ...oldDay,
+         sessions,
+         currentSessionId:sessionId,
+         lastActiveAt:activityNow
+       }
+     };
+
      return {
        ...existing,
        classNo:Number(profile.classNo),
        studentNo:Number(profile.studentNo),
        nickname:String(existing.nickname||profile.nickname||''),
        solved:Math.max(0,Number(existing.solved||0))+1,
+       activity,
        updatedAt:firebase.database.ServerValue.TIMESTAMP
      };
    });
@@ -1099,14 +1132,7 @@ async function incrementSolved(){
    document.getElementById('mySolvedDisplay').textContent=`${solvedProblems}문제`;
    refreshClassroomRanks();
 
-   // 기존 solved 저장이 성공한 뒤에 실제 풀이 활동을 기록한다.
-   // activity 기록이 완료된 뒤 incrementSolved를 끝내므로,
-   // 다음 session 판정이 누락되지 않도록 한다.
-   const activitySaved=await recordSolveActivity(profile);
-   if(!activitySaved){
-     console.error('문항 수 저장은 성공했지만 실제 풀이 활동 기록에 실패했습니다:',key);
-   }
-
+   // solved와 activity가 같은 transaction에서 이미 함께 저장되었다.
    return true;
  }catch(e){
    console.error('문항 수 저장 실패:',key,e);
