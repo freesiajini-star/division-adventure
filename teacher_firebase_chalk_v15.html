@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>나눗셈 탐험대 · 교사 대시보드</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2378b99a'/%3E%3Crect x='8' y='8' width='48' height='48' rx='13' fill='%23ffffff' opacity='.96'/%3E%3Ccircle cx='32' cy='19' r='4.5' fill='%23e5ad50'/%3E%3Crect x='16' y='27' width='32' height='7' rx='3.5' fill='%233c8567'/%3E%3Ccircle cx='32' cy='44' r='4.5' fill='%2378b99a'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:#f4f0df;font-family:"Noto Sans KR",Arial,sans-serif;background:
+  radial-gradient(ellipse at 50% 8%,rgba(115,150,105,.18),transparent 42%),
+  radial-gradient(ellipse at 15% 78%,rgba(8,35,25,.22),transparent 42%),
+  radial-gradient(ellipse at 86% 42%,rgba(5,30,22,.18),transparent 46%),
+  linear-gradient(180deg,#174b36 0%,#164632 48%,#123b2c 100%);
+  position:relative;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.24;background-image:
+  repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px),
+  repeating-linear-gradient(90deg,rgba(0,0,0,.018) 0,rgba(0,0,0,.018) 1px,transparent 1px,transparent 7px),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,.20) 100%);}
+.wrap{position:relative;z-index:1}
+.wrap{max-width:1250px;margin:0 auto;padding:28px 22px 50px}
+h1{margin:0;font-size:34px;font-weight:900;letter-spacing:-2px}
+h1 .y{color:#ffe46b;text-shadow:0 2px 5px rgba(0,0,0,.25)} h1 .b{color:#9ad9ee;text-shadow:0 2px 5px rgba(0,0,0,.25)}
+.sub{margin:5px 0 22px;color:rgba(245,242,226,.82);text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.toolbar,.tabs,.cards,.panel{background:rgba(246,241,220,.94);color:#27324a;border:2px solid rgba(39,50,74,.12);border-radius:18px;box-shadow:0 8px 24px rgba(39,50,74,.12)}
+.toolbar label,.panel,.cards,.tabs{color:#27324a}
+.card{color:#27324a}.cards .card:first-child small{color:#2d7a55}.cards .card:first-child strong{color:#187a4a}
+.card small{color:#50677a}
+.tabs button{color:#27324a}
+.toolbar{padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+input,select,button{font:inherit}
+input,select{padding:9px 12px;border-radius:10px;border:1px solid #aaa;background:#fff;color:#222}
+.tabs{margin-top:14px;padding:8px;display:flex;gap:7px;flex-wrap:wrap}
+.tabs button{border:0;border-radius:10px;padding:8px 15px;background:transparent;color:#27324a;cursor:pointer;font-weight:800}
+.tabs button.active{background:#ffe46b;color:#183f32;font-weight:800}
+.cards{margin-top:14px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{background:rgba(255,255,255,.56);padding:15px;border-radius:13px}.card small{display:block;color:#50677a}.card strong{font-size:27px}.attention-card{border:1px solid rgba(255,180,70,.45)}
+.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:14px}
+.panel{padding:17px}.panel h2{font-size:18px;margin:0 0 13px}
+.chartWrap{position:relative;height:250px;overflow:hidden;border-radius:12px;background:rgba(255,255,255,.28);cursor:grab;touch-action:none}.chartWrap.dragging{cursor:grabbing}.chartSvg{width:100%;height:100%;display:block}.chartSvg text{font-family:"Noto Sans KR",Arial,sans-serif;fill:#50677a;font-size:11px}.chartSvg .axis{stroke:rgba(39,50,74,.38);stroke-width:1}.chartSvg .gridline{stroke:rgba(39,50,74,.12);stroke-width:1}.chartSvg .linePath{fill:none;stroke:#2d6fa3;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chartSvg .point{fill:#f3a64a;stroke:#fff;stroke-width:2}.chartSvg .barRect{fill:#58c8ed;opacity:.82}.chartHint{font-size:11px;color:#50677a;margin-top:6px}.chartActions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}.chartActions button{padding:5px 9px;border:1px solid rgba(39,50,74,.18);border-radius:8px;background:rgba(255,255,255,.7);color:#27324a;cursor:pointer;font-size:12px}.chartModal{display:none;position:fixed;inset:0;background:rgba(20,35,45,.55);z-index:1000;align-items:center;justify-content:center;padding:22px}.chartModal.open{display:flex}.chartModalBox{width:min(1100px,96vw);height:min(680px,90vh);background:#fff8e6;border-radius:20px;border:2px solid rgba(39,50,74,.16);box-shadow:0 20px 60px rgba(0,0,0,.28);padding:14px;display:flex;flex-direction:column}.chartModalHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.chartModalHead strong{font-size:18px}.chartModalClose{border:0;background:rgba(39,50,74,.08);border-radius:10px;padding:7px 11px;cursor:pointer}.chartModal .chartWrap{flex:1;height:auto;margin-top:10px;background:rgba(255,255,255,.55)}
+
+.list{margin-top:14px}
+.rankSection{margin-top:14px;padding:0;overflow:hidden}.rankToggle{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border:0;background:rgba(246,241,220,.98);color:#27324a;font:inherit;font-weight:900;font-size:18px;text-align:left;cursor:pointer}.rankToggle .toggleHint{font-size:13px;font-weight:700;color:#50677a}.rankContent{padding:0 14px 14px}.rankGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rankCard{min-width:0;border:1px solid rgba(39,50,74,.15);border-radius:13px;padding:12px;background:rgba(255,255,255,.62);color:#27324a}.rankCard h3{margin:0 0 8px;font-size:16px}.rankMeta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}.rankMeta span{font-size:12px;font-weight:800;border-radius:8px;padding:5px 7px;background:rgba(45,122,85,.10);color:#236342}.rankTable{width:100%;font-size:13px}.rankTable th,.rankTable td{padding:6px 5px;border-bottom:1px solid rgba(39,50,74,.10)}.rankTable th{color:#50677a}.rankTable td:last-child,.rankTable th:last-child{text-align:right;font-variant-numeric:tabular-nums}.rankStatus{text-align:center!important;width:28px}.rankDot{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:middle;box-shadow:0 0 0 2px rgba(39,50,74,.10)}.rankDot.active{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.16),0 0 7px rgba(34,197,94,.28)}.rankDot.paused{background:#f5b800;box-shadow:0 0 0 2px rgba(245,184,0,.16)}.rankDot.inactive{background:#8c98a5}.rankEmpty{font-size:13px;color:#64748b;padding:12px 3px}
+@media(max-width:650px){.rankGrid{grid-template-columns:1fr}.rankToggle{font-size:16px;padding:14px}.rankContent{padding:0 10px 10px}}
+table{width:100%;border-collapse:collapse;font-size:14px;color:#27324a}
+th,td{padding:9px 7px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
+th{color:#3f5668;font-weight:800}
+tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
+.status{white-space:nowrap}.statusSignal{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-weight:800}.statusSignal i{display:inline-block;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px rgba(39,50,74,.12)}.statusSignal.active{color:#138a45}.statusSignal.active i{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.18),0 0 8px rgba(34,197,94,.35)}.statusSignal.paused{color:#a86d00}.statusSignal.paused i{background:#f5b800;box-shadow:0 0 0 2px rgba(245,184,0,.18),0 0 8px rgba(245,184,0,.28)}.statusSignal.inactive{color:#52657a}.statusSignal.inactive i{background:#8c98a5;box-shadow:0 0 0 2px rgba(82,101,122,.14)}.green{color:#168f4a}.yellow{color:#b97800}.gray{color:#52657a}.warn{color:#d46f00;font-weight:800}.badge{display:inline-block;padding:4px 7px;border-radius:8px;background:rgba(255,179,71,.14);border:1px solid rgba(255,179,71,.42);white-space:nowrap}.criteria{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,179,71,.10);border:1px solid rgba(255,179,71,.28)}.criteria div{margin:5px 0}.hit{color:#ffca78;font-weight:800}.miss{color:#68737d}
+.detail{margin-top:14px}.session{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(39,50,74,.08);color:#27324a;margin:6px 0}
+.err{margin-top:12px;padding:12px;border-radius:10px;background:rgba(180,40,40,.25);color:#ffd6d6;display:none}
+.ok{color:#236342;font-weight:800}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}.wrap{padding:18px 12px}h1{font-size:28px}table{font-size:13px}.status{white-space:normal}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="y">나눗셈</span> <span class="b">탐험대</span></h1>
+  <div class="sub">교사 대시보드 · 실제 문제 풀이 활동만 기록합니다.</div>
+
+  <div class="toolbar">
+    <label>날짜 <input id="date" type="date"></label>
+    <span id="connection" class="ok">Firebase 연결 준비 중…</span>
+  </div>
+
+  <div class="tabs" id="tabs"><button class="active" data-class="all">전체</button></div>
+
+  <div class="cards">
+    <div class="card"><small>실시간 학습자 수</small><strong id="students">0명</strong></div>
+    <div class="card"><small>오늘 총 학습자 수</small><strong id="todayStudents">0명</strong></div>
+    <div class="card"><small>총 풀이 문제</small><strong id="solves">0문제</strong></div>
+    <div class="card"><small>총 학습회차 수</small><strong id="sessions">0회</strong></div>
+    <div class="card attention-card"><small>이용패턴 지도 필요</small><strong id="attentionCount">0명</strong></div>
+  </div>
+
+  <section class="panel list">
+    <h2>학생별 활동</h2><div class="session-note">학습 회차: 30분 이상 학습이 중단되면 새로운 학습 회차로 기록됩니다.</div>
+    <table>
+      <thead><tr><th>학생</th><th>누적 문제 수</th><th>오늘 푼 문제 수</th><th>당일 학습 회차</th><th>최종 학습 시각</th><th>상태</th><th>이용패턴 주의 여부</th></tr></thead>
+      <tbody id="studentsTable"></tbody>
+    </table>
+    <div id="detail" class="detail"></div>
+  </section>
+  <section class="panel rankSection" id="rankSection">
+    <button class="rankToggle" id="rankToggle" type="button" aria-expanded="false" aria-controls="rankContent">
+      <span>반별 순위표</span><span class="toggleHint" id="rankToggleHint">펼쳐서 보기　＋</span>
+    </button>
+    <div class="rankContent" id="rankContent" hidden>
+      <div class="rankGrid" id="rankGrid"></div>
+      <div class="chartHint">월간 누적 풀이 수 기준입니다. 반 평균은 해당 월에 실제로 한 문제 이상 푼 학생을 기준으로 계산합니다.</div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>일별 추이 · 최근 14일</h2>
+      <div id="daily" class="chartWrap" data-chart="daily"></div><div class="chartHint">그래프를 드래그하면 이동하고, 클릭하면 크게 볼 수 있습니다.</div><div class="chartActions"><button type="button" data-open-chart="daily">확대</button></div>
+    </section>
+    <section class="panel">
+      <h2>일간 이용 시간대</h2>
+      <div id="hourly" class="chartWrap" data-chart="hourly"></div><div class="chartHint">시간대는 3시간 간격으로 표시합니다. 드래그·확대가 가능합니다.</div><div class="chartActions"><button type="button" data-open-chart="hourly">확대</button></div>
+    </section>
+  </div>
+
+  <div id="error" class="err"></div>
+</div>
+<div id="chartModal" class="chartModal" aria-hidden="true"><div class="chartModalBox"><div class="chartModalHead"><strong id="chartModalTitle">그래프 확대</strong><button type="button" class="chartModalClose" id="chartModalClose">닫기</button></div><div id="chartModalChart" class="chartWrap"></div><div class="chartHint">마우스/손가락으로 드래그 · 휠로 확대/축소 · 초기화 버튼으로 원래 보기</div><div class="chartActions"><button type="button" id="chartReset">초기화</button></div></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey:"AIzaSyAUyC6n6NwABZr2NqLFCpCTNY1XfXDrX7k",
+  authDomain:"division-adventure.firebaseapp.com",
+  databaseURL:"https://division-adventure-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"division-adventure",
+  storageBucket:"division-adventure.firebasestorage.app",
+  messagingSenderId:"214361536617",
+  appId:"1:214361536617:web:b80f5ac9183bd906e38af8"
+};
+const MONTHLY_RANK_PATH='thirdGrade/monthly/2026-10';
+const RISK_RULES={
+  daily500:{label:'하루 500문제 이상'},
+  threeDays300:{label:'최근 3일 연속 하루 300문제 이상'},
+  session200:{label:'한 학습 회차 200문제 이상'},
+  sevenSessions:{label:'하루 7학습 회차 이상'}
+};
+let db=null, allStudents={}, selectedClass='all';
+const dateEl=document.getElementById('date');
+
+function pad(n){return String(n).padStart(2,'0')}
+function dateKeyLocal(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function parseDateKey(key){const [y,m,d]=String(key).split('-').map(Number); return new Date(y,m-1,d,12,0,0)}
+function addDaysKey(key,delta){const d=parseDateKey(key); d.setDate(d.getDate()+delta); return dateKeyLocal(d)}
+const today=new Date();
+dateEl.value=dateKeyLocal(today);
+
+function showError(e){
+  const el=document.getElementById('error'); el.style.display='block';
+  el.textContent='Firebase 오류: '+(e?.message||e);
+  document.getElementById('connection').textContent='연결 실패';
+  document.getElementById('connection').className='';
+}
+function fmt(ts){
+  if(!ts)return '-';
+  return new Date(Number(ts)).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+function displayStudent(o){return `${o.x.nickname||'동물'} (${o.x.classNo}-${pad(Number(o.x.studentNo)||0)})`}
+function sessionsFor(student,dateKey){
+  return Object.values(student?.activity?.[dateKey]?.sessions||{})
+    .filter(x=>x&&Number(x.endAt))
+    .sort((a,b)=>Number(a.startAt)-Number(b.startAt));
+}
+function daySolved(student,dateKey){return sessionsFor(student,dateKey).reduce((sum,s)=>sum+Number(s.solved||0),0)}
+function riskFor(student,dateKey){
+  const s=sessionsFor(student,dateKey);
+  const daily=daySolved(student,dateKey);
+  const last3=[dateKey,addDaysKey(dateKey,-1),addDaysKey(dateKey,-2)].map(k=>daySolved(student,k));
+  const hit={
+    daily500:daily>=500,
+    threeDays300:last3.every(v=>v>=300),
+    session200:s.some(x=>Number(x.solved||0)>=200),
+    sevenSessions:s.length>=7
+  };
+  const count=Object.values(hit).filter(Boolean).length;
+  return {hit,count,daily,sessionMax:Math.max(0,...s.map(x=>Number(x.solved||0))),sessions:s.length};
+}
+function filtered(dateKey){
+  return Object.entries(allStudents).map(([key,x])=>({key,x,s:sessionsFor(x,dateKey),risk:riskFor(x,dateKey)}))
+    .filter(o=>o.s.length && (selectedClass==='all'||Number(o.x.classNo)===Number(selectedClass)));
+}
+function statusHtml(lastEnd,dateKey){
+  if(dateKey!==dateKeyLocal(new Date())) return '<span class="statusSignal inactive"><i></i>활동 없음</span>';
+  const gap=Date.now()-Number(lastEnd||0);
+  return gap<=120000?'<span class="statusSignal active"><i></i>학습 중</span>':gap<=600000?'<span class="statusSignal paused"><i></i>잠시 멈춤</span>':'<span class="statusSignal inactive"><i></i>활동 없음</span>';
+}
+function riskBadge(risk){return risk.count>=2?`<span class="badge warn">⚠️ ${risk.count}/4</span>`:'<span class="gray">—</span>'}
+function render(){
+  const dateKey=dateEl.value;
+  const rows=filtered(dateKey);
+  const todayKey=dateKeyLocal(new Date());
+  const todayRows=Object.entries(allStudents).map(([key,x])=>({key,x,s:sessionsFor(x,todayKey)}))
+    .filter(o=>o.s.length && (selectedClass==='all'||Number(o.x.classNo)===Number(selectedClass)));
+  const realtimeCount=todayRows.filter(o=>{
+    const last=o.s[o.s.length-1];
+    return Date.now()-Number(last?.endAt||0)<=120000;
+  }).length;
+  let total=0,sess=0,attention=0;
+  rows.forEach(o=>{sess+=o.s.length; total+=o.s.reduce((a,b)=>a+Number(b.solved||0),0); if(o.risk.count>=2)attention++});
+  document.getElementById('students').textContent=realtimeCount+'명';
+  document.getElementById('todayStudents').textContent=todayRows.length+'명';
+  document.getElementById('solves').textContent=total+'문제';
+  document.getElementById('sessions').textContent=sess+'회';
+  document.getElementById('attentionCount').textContent=attention+'명';
+
+  const body=document.getElementById('studentsTable');
+  body.innerHTML=rows.map((o,i)=>{
+    const last=o.s[o.s.length-1];
+    const label=o.risk.count>=2?`<span class="badge warn">⚠️ 이용패턴 지도 필요 · ${o.risk.count}/4 위험요소 충족</span>`:'<span class="gray">정상 범위</span>';
+    return `<tr class="clickable" data-i="${i}"><td>${displayStudent(o)}</td><td>${Number(o.x.solved||0)}</td><td>${o.risk.daily}</td><td>${o.s.length}회차</td><td>${fmt(last.endAt)}</td><td class="status">${statusHtml(last.endAt,dateKey)}</td><td>${label}</td></tr>`;
+  }).join('') || '<tr><td colspan="7">선택한 날짜에 학습 기록이 없습니다.</td></tr>';
+
+  document.querySelectorAll('tr.clickable').forEach(tr=>tr.onclick=()=>{
+    const o=rows[Number(tr.dataset.i)];
+    const r=o.risk;
+    const riskTitle=r.count>=2?`<div class="criteria"><strong>⚠️ 이용패턴 지도 필요 · ${r.count}/4 위험요소 충족</strong><div class="hit">${r.hit.daily500?'✓':'—'} 하루 500문제 이상 (${r.daily}문제)</div><div class="${r.hit.threeDays300?'hit':'miss'}">${r.hit.threeDays300?'✓':'—'} 최근 3일 연속 하루 300문제 이상</div><div class="${r.hit.session200?'hit':'miss'}">${r.hit.session200?'✓':'—'} 한 학습 회차 200문제 이상 (최대 ${r.sessionMax}문제)</div><div class="${r.hit.sevenSessions?'hit':'miss'}">${r.hit.sevenSessions?'✓':'—'} 하루 7학습 회차 이상 (${r.sessions}학습 회차)</div></div>`:'<div class="criteria"><strong>이용패턴 지도 필요 기준: 해당 없음</strong></div>';
+    document.getElementById('detail').innerHTML='<h2>'+displayStudent(o)+' · 학습 회차</h2>'+riskTitle+o.s.map((s,j)=>`<div class="session"><span>${j+1}학습 회차 · ${fmt(s.startAt)} ~ ${fmt(s.endAt)}</span><strong>${Number(s.solved||0)}문제</strong></div>`).join('');
+  });
+  renderHourly(rows);
+}
+let chartState={daily:{scale:1,offset:0},hourly:{scale:1,offset:0}};
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function niceMax(v){if(v<=5)return 5;if(v<=10)return 10;if(v<=20)return 20;if(v<=50)return Math.ceil(v/10)*10;if(v<=100)return Math.ceil(v/20)*20;if(v<=200)return Math.ceil(v/50)*50;return Math.ceil(v/100)*100;}
+function makeSvgChart(type,data,target,modal=false){
+  const W=1000,H=360,left=62,right=22,top=24,bottom=52,plotW=W-left-right,plotH=H-top-bottom;
+  const st=chartState[type]; const n=data.length; const step=plotW/Math.max(1,n-1); const visible=Math.max(1,Math.min(n,Math.round(n/st.scale))); const maxY=niceMax(Math.max(1,...data.map(d=>d.v)));
+  const center=(n-1)/2; const shift=st.offset*step; const xFor=i=>left+(i-center)*step*st.scale+plotW/2-shift;
+  const clip='clip-'+type+(modal?'m':'s'); let s=`<svg class="chartSvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><clipPath id="${clip}"><rect x="${left}" y="${top}" width="${plotW}" height="${plotH}"/></clipPath></defs>`;
+  for(let j=0;j<=4;j++){const y=top+plotH-j*plotH/4;const val=Math.round(maxY*j/4);s+=`<line class="gridline" x1="${left}" x2="${W-right}" y1="${y}" y2="${y}"/><text x="${left-10}" y="${y+4}" text-anchor="end">${val}</text>`}
+  s+=`<line class="axis" x1="${left}" x2="${left}" y1="${top}" y2="${top+plotH}"/><line class="axis" x1="${left}" x2="${W-right}" y1="${top+plotH}" y2="${top+plotH}"/>`;
+  if(type==='daily'){
+    const pts=data.map((d,i)=>[xFor(i),top+plotH-(d.v/maxY)*plotH]);
+    s+=`<g clip-path="url(#${clip})"><polyline class="linePath" points="${pts.map(p=>p.join(',')).join(' ')}"/>${pts.map((p,i)=>`<circle class="point" cx="${p[0]}" cy="${p[1]}" r="5"><title>${esc(data[i].label)}: ${data[i].v}명</title></circle>`).join('')}</g>`;
+    const every=st.scale>1.6?1:st.scale>1.2?2:3;
+    data.forEach((d,i)=>{if(i%every===0||i===data.length-1){const x=xFor(i);s+=`<text x="${x}" y="${H-17}" text-anchor="middle">${esc(d.label)}</text>`}});
+  }else{
+    const bw=Math.max(8,Math.min(34,plotW/n*.58));
+    s+=`<g clip-path="url(#${clip})">`;
+    data.forEach((d,i)=>{const x=xFor(i)-bw/2,h=(d.v/maxY)*plotH,y=top+plotH-h;s+=`<rect class="barRect" x="${x}" y="${y}" width="${bw}" height="${Math.max(1,h)}" rx="4"><title>${esc(d.label)}: ${d.v}학습 회차</title></rect>`});s+='</g>';
+    const labels=data.map((d,i)=>({d,i})).filter(o=>o.i%3===0||o.i===data.length-1); labels.forEach(({d,i})=>{const x=xFor(i);s+=`<text x="${x}" y="${H-17}" text-anchor="middle">${esc(d.label)}</text>`});
+  }
+  s+='</svg>'; target.innerHTML=s;
+}
+function setupChartInteractions(el,type,renderFn){
+  let down=null;
+  const getType=()=>type||el.dataset.type;
+  el.addEventListener('dblclick',e=>{e.preventDefault();openChart(getType())});
+  el.addEventListener('pointerdown',e=>{const t=getType();down={x:e.clientX,offset:chartState[t].offset};el.classList.add('dragging');el.setPointerCapture?.(e.pointerId)});
+  el.addEventListener('pointermove',e=>{if(!down)return;const t=getType();chartState[t].offset=down.offset-(e.clientX-down.x)/80;renderFn()});
+  el.addEventListener('pointerup',()=>{down=null;el.classList.remove('dragging')});
+  el.addEventListener('pointercancel',()=>{down=null;el.classList.remove('dragging')});
+  el.addEventListener('wheel',e=>{e.preventDefault();const t=getType();chartState[t].scale=Math.max(1,Math.min(4,chartState[t].scale*(e.deltaY<0?1.15:.87)));renderFn()},{passive:false});
+}
+const chartCache={daily:[],hourly:[]};
+function drawChart(type,modal=false){const target=document.getElementById(modal?'chartModalChart':type);if(!target)return;makeSvgChart(type,chartCache[type],target,modal);if(!modal&&!target.dataset.bound){setupChartInteractions(target,type,()=>drawChart(type,false));target.dataset.bound='1';}}
+function renderHourly(rows){const counts=Array(24).fill(0);rows.forEach(o=>o.s.forEach(s=>{const h=new Date(Number(s.endAt)).getHours();counts[h]++}));chartCache.hourly=counts.map((v,h)=>({v,label:`${h}시`}));drawChart('hourly');}
+function renderDaily(){const base=dateEl.value;const vals=[];for(let i=13;i>=0;i--){const key=addDaysKey(base,-i);vals.push({v:filtered(key).length,label:key.slice(5).replace('-','/').replace(/^0/,'')})}chartCache.daily=vals;drawChart('daily');}
+function openChart(type){const modal=document.getElementById('chartModal');document.getElementById('chartModalTitle').textContent=type==='daily'?'일별 추이 · 최근 14일':'일간 이용 시간대';modal.classList.add('open');modal.setAttribute('aria-hidden','false');chartState[type]={scale:1,offset:0};const target=document.getElementById('chartModalChart');target.dataset.type=type;makeSvgChart(type,chartCache[type],target,true);if(!target.dataset.bound){setupChartInteractions(target,null,()=>{const t=target.dataset.type;makeSvgChart(t,chartCache[t],target,true)});target.dataset.bound='1';}}
+function closeChart(){const modal=document.getElementById('chartModal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+function renderTabs(){
+  const tabs=document.getElementById('tabs');
+  const classes=[...new Set(Object.values(allStudents)
+    .filter(x=>{
+      if(!x)return false;
+      const solved=Number(x.solved||0);
+      const activity=x.activity&&Object.values(x.activity).some(d=>d&&d.sessions&&Object.keys(d.sessions).length);
+      return solved>0 || activity;
+    })
+    .map(x=>Number(x.classNo))
+    .filter(n=>Number.isFinite(n) && n>0))].sort((a,b)=>a-b);
+
+  if(selectedClass!=='all' && !classes.includes(Number(selectedClass))) selectedClass='all';
+  tabs.innerHTML='<button data-class="all">전체</button>'+classes.map(c=>`<button data-class="${c}">${c}반</button>`).join('');
+  tabs.querySelector(`[data-class="${selectedClass}"]`)?.classList.add('active');
+  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    tabs.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    selectedClass=b.dataset.class;
+    renderAll();
+  });
+}
+function rankStatus(student){
+  let lastEnd=0;
+  Object.values(student?.activity||{}).forEach(day=>{
+    Object.values(day?.sessions||{}).forEach(session=>{
+      const end=Number(session?.endAt||0);
+      if(end>lastEnd)lastEnd=end;
+    });
+  });
+  const gap=lastEnd?Date.now()-lastEnd:Infinity;
+  if(gap<=120000)return '<span class="rankDot active" title="학습 중" aria-label="학습 중"></span>';
+  if(gap<=600000)return '<span class="rankDot paused" title="잠시 멈춤" aria-label="잠시 멈춤"></span>';
+  return '<span class="rankDot inactive" title="활동 없음" aria-label="활동 없음"></span>';
+}
+function renderRankings(){
+  const grid=document.getElementById('rankGrid');
+  const byClass=new Map();
+  for(let c=1;c<=5;c++)byClass.set(c,[]);
+  Object.entries(allStudents||{}).forEach(([key,x])=>{
+    if(!x)return;
+    const c=Number(x.classNo), solved=Number(x.solved||0);
+    if(c>=1&&c<=5&&Number.isFinite(c)&&solved>0){
+      byClass.get(c).push({key,x,solved});
+    }
+  });
+  grid.innerHTML=[1,2,3,4,5].map(c=>{
+    const rows=(byClass.get(c)||[]).sort((a,b)=>b.solved-a.solved||Number(a.x.studentNo||0)-Number(b.x.studentNo||0));
+    const total=rows.reduce((sum,o)=>sum+o.solved,0);
+    const avg=rows.length?Math.round(total/rows.length):0;
+    const meta=`<div class="rankMeta"><span>참여 ${rows.length}명</span><span>반 평균 ${avg.toLocaleString('ko-KR')}문제</span></div>`;
+    const table=rows.length?`<table class="rankTable"><thead><tr><th>순위</th><th>학생</th><th>누적 풀이</th><th class="rankStatus"></th></tr></thead><tbody>${rows.slice(0,10).map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.x.nickname||'동물')} (${c}-${pad(Number(o.x.studentNo)||0)})</td><td>${o.solved.toLocaleString('ko-KR')}</td><td class="rankStatus">${rankStatus(o.x)}</td></tr>`).join('')}</tbody></table>${rows.length>10?`<div class="chartHint">상위 10명 표시 · 참여 학생 ${rows.length}명</div>`:''}`:'<div class="rankEmpty">아직 풀이 기록이 없습니다.</div>';
+    return `<article class="rankCard"><h3>${c}반</h3>${meta}${table}</article>`;
+  }).join('');
+}
+function renderAll(){renderTabs();render();renderDaily();renderRankings()}
+
+document.getElementById('rankToggle').onclick=()=>{const content=document.getElementById('rankContent');const open=content.hidden;content.hidden=!open;document.getElementById('rankToggle').setAttribute('aria-expanded',String(open));document.getElementById('rankToggleHint').textContent=open?'접기　−':'펼쳐서 보기　＋';};
+document.querySelectorAll('[data-open-chart]').forEach(b=>b.onclick=()=>openChart(b.dataset.openChart));
+document.getElementById('chartModalClose').onclick=closeChart;
+document.getElementById('chartModal').addEventListener('click',e=>{if(e.target.id==='chartModal')closeChart()});
+document.getElementById('chartReset').onclick=()=>{const type=document.getElementById('chartModalChart').dataset.type;if(type){chartState[type]={scale:1,offset:0};makeSvgChart(type,chartCache[type],document.getElementById('chartModalChart'),true)}};
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeChart()});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); selectedClass=b.dataset.class; renderAll();
+});
+dateEl.onchange=renderAll;
+
+try{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.database();
+  firebase.auth().signInAnonymously().then(()=>{
+    document.getElementById('connection').textContent='Firebase 연결됨 · 실시간';
+    const studentsRef=db.ref(MONTHLY_RANK_PATH+'/students');
+    // Firebase 실시간 감지 + 주기적 재확인: 교사 화면을 열어둔 상태에서도 최신값을 놓치지 않도록 함
+    studentsRef.on('value',snap=>{allStudents=snap.val()||{}; renderAll()},showError);
+    studentsRef.on('child_changed',()=>studentsRef.once('value').then(snap=>{allStudents=snap.val()||{}; renderAll()}).catch(showError));
+    setInterval(()=>{
+      studentsRef.once('value').then(snap=>{allStudents=snap.val()||{}; renderAll()}).catch(()=>{});
+    },5000);
+    // 풀이가 새로 발생하지 않아도 10초마다 상태(학습 중/잠시 멈춤/활동 없음)를 갱신
+    setInterval(()=>{render();renderRankings()},10000);
+  }).catch(showError);
+}catch(e){showError(e)}
+</script>
+
+</body>
+</html>
