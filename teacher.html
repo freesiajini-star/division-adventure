@@ -251,7 +251,33 @@ function setupChartInteractions(el,type,renderFn){
 const chartCache={daily:[],hourly:[]};
 function drawChart(type,modal=false){const target=document.getElementById(modal?'chartModalChart':type);if(!target)return;makeSvgChart(type,chartCache[type],target,modal);if(!modal&&!target.dataset.bound){setupChartInteractions(target,type,()=>drawChart(type,false));target.dataset.bound='1';}}
 function renderHourly(rows){const counts=Array(24).fill(0);rows.forEach(o=>o.s.forEach(s=>{const h=new Date(Number(s.endAt)).getHours();counts[h]++}));chartCache.hourly=counts.map((v,h)=>({v,label:`${h}시`}));drawChart('hourly');}
-function renderDaily(){const base=dateEl.value;const vals=[];for(let i=13;i>=0;i--){const key=addDaysKey(base,-i);vals.push({v:filtered(key).length,label:key.slice(5).replace('-','/').replace(/^0/,'')})}chartCache.daily=vals;drawChart('daily');}
+// 14일 그래프는 월 경계에 걸치면 각 날짜가 속한 월의 기록을 사용합니다.
+const dailyMonthCache=new Map();
+let dailyRequestId=0;
+function renderDaily(){
+  const base=dateEl.value;
+  const days=Array.from({length:14},(_,i)=>addDaysKey(base,i-13));
+  const months=[...new Set(days.map(k=>k.slice(0,7)))];
+  const requestId=++dailyRequestId;
+  const current=currentMonthKey();
+  dailyMonthCache.set(current,allStudents);
+  const pending=months.filter(m=>m!==current && !dailyMonthCache.has(m));
+  // 지난달 자료는 별도 경로에서 읽고 현재 월의 실시간 구독은 유지합니다.
+  Promise.all(pending.map(m=>db.ref(`${MONTHLY_RANK_ROOT}/${m}/students`).once('value')
+    .then(snap=>{dailyMonthCache.set(m,snap.val()||{});})
+    .catch(err=>{showError(err);dailyMonthCache.set(m,{});}))).then(()=>{
+    if(requestId!==dailyRequestId)return;
+    const vals=days.map(key=>{
+      const month=key.slice(0,7);
+      const students=month===currentMonthKey()?allStudents:(dailyMonthCache.get(month)||{});
+      const count=Object.values(students).filter(x=>x &&
+        (selectedClass==='all'||Number(x.classNo)===Number(selectedClass)) &&
+        sessionsFor(x,key).length>0).length;
+      return {v:count,label:key.slice(5).replace('-','/').replace(/^0/,'')};
+    });
+    chartCache.daily=vals;drawChart('daily');
+  });
+}
 function openChart(type){const modal=document.getElementById('chartModal');document.getElementById('chartModalTitle').textContent=type==='daily'?'일별 추이 · 최근 14일':'일간 이용 시간대';modal.classList.add('open');modal.setAttribute('aria-hidden','false');chartState[type]={scale:1,offset:0};const target=document.getElementById('chartModalChart');target.dataset.type=type;makeSvgChart(type,chartCache[type],target,true);if(!target.dataset.bound){setupChartInteractions(target,null,()=>{const t=target.dataset.type;makeSvgChart(t,chartCache[t],target,true)});target.dataset.bound='1';}}
 function closeChart(){const modal=document.getElementById('chartModal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
 function renderTabs(){
@@ -357,6 +383,7 @@ function subscribeToCurrentMonth(){
   if(activeMonthKey===month)return;
   if(studentsRef)studentsRef.off();
   activeMonthKey=month;
+  dailyMonthCache.clear();
   populateRankMonths();
   loadRankMonth();
   allStudents={}; selectedClass='all';
