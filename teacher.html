@@ -308,7 +308,7 @@ function renderRankings(){
     const total=rows.reduce((sum,o)=>sum+o.solved,0);
     const avg=rows.length?Math.round(total/rows.length):0;
     const meta=`<div class="rankMeta"><span>참여 ${rows.length}명</span><span>반 평균 ${avg.toLocaleString('ko-KR')}문제</span></div>`;
-    const table=rows.length?`<table class="rankTable"><thead><tr><th>순위</th><th>학생</th><th>누적 풀이</th><th class="rankStatus"></th></tr></thead><tbody>${rows.map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.x.nickname||'동물')} (${c}-${pad(Number(o.x.studentNo)||0)})</td><td>${o.solved.toLocaleString('ko-KR')}</td><td class="rankStatus">${rankStatus(o.x,isHistorical)}</td></tr>`).join('')}</tbody></table>}`:'<div class="rankEmpty">아직 풀이 기록이 없습니다.</div>';
+    const table=rows.length?`<table class="rankTable"><thead><tr><th>순위</th><th>학생</th><th>누적 풀이</th><th class="rankStatus"></th></tr></thead><tbody>${rows.map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.x.nickname||'동물')} (${c}-${pad(Number(o.x.studentNo)||0)})</td><td>${o.solved.toLocaleString('ko-KR')}</td><td class="rankStatus">${rankStatus(o.x,isHistorical)}</td></tr>`).join('')}</tbody></table>`:'<div class="rankEmpty">아직 풀이 기록이 없습니다.</div>';
     return `<article class="rankCard"><h3>${c}반</h3>${meta}${table}</article>`;
   }).join('');
 }
