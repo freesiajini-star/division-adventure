@@ -41,7 +41,7 @@ input,select{padding:9px 12px;border-radius:10px;border:1px solid #aaa;backgroun
 .chartWrap{position:relative;height:250px;overflow:hidden;border-radius:12px;background:rgba(255,255,255,.28);cursor:grab;touch-action:none}.chartWrap.dragging{cursor:grabbing}.chartSvg{width:100%;height:100%;display:block}.chartSvg text{font-family:"Noto Sans KR",Arial,sans-serif;fill:#50677a;font-size:11px}.chartSvg .axis{stroke:rgba(39,50,74,.38);stroke-width:1}.chartSvg .gridline{stroke:rgba(39,50,74,.12);stroke-width:1}.chartSvg .linePath{fill:none;stroke:#2d6fa3;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chartSvg .point{fill:#f3a64a;stroke:#fff;stroke-width:2}.chartSvg .barRect{fill:#58c8ed;opacity:.82}.chartHint{font-size:11px;color:#50677a;margin-top:6px}.chartActions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}.chartActions button{padding:5px 9px;border:1px solid rgba(39,50,74,.18);border-radius:8px;background:rgba(255,255,255,.7);color:#27324a;cursor:pointer;font-size:12px}.chartModal{display:none;position:fixed;inset:0;background:rgba(20,35,45,.55);z-index:1000;align-items:center;justify-content:center;padding:22px}.chartModal.open{display:flex}.chartModalBox{width:min(1100px,96vw);height:min(680px,90vh);background:#fff8e6;border-radius:20px;border:2px solid rgba(39,50,74,.16);box-shadow:0 20px 60px rgba(0,0,0,.28);padding:14px;display:flex;flex-direction:column}.chartModalHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.chartModalHead strong{font-size:18px}.chartModalClose{border:0;background:rgba(39,50,74,.08);border-radius:10px;padding:7px 11px;cursor:pointer}.chartModal .chartWrap{flex:1;height:auto;margin-top:10px;background:rgba(255,255,255,.55)}
 
 .list{margin-top:14px}
-.rankSection{margin-top:14px;padding:0;overflow:hidden}.rankToggle{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border:0;background:rgba(246,241,220,.98);color:#27324a;font:inherit;font-weight:900;font-size:18px;text-align:left;cursor:pointer}.rankToggle .toggleHint{font-size:13px;font-weight:700;color:#50677a}.rankContent{padding:0 14px 14px}.rankGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rankCard{min-width:0;border:1px solid rgba(39,50,74,.15);border-radius:13px;padding:12px;background:rgba(255,255,255,.62);color:#27324a}.rankCard h3{margin:0 0 8px;font-size:16px}.rankMeta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}.rankMeta span{font-size:12px;font-weight:800;border-radius:8px;padding:5px 7px;background:rgba(45,122,85,.10);color:#236342}.rankTable{width:100%;font-size:13px}.rankTable th,.rankTable td{padding:6px 5px;border-bottom:1px solid rgba(39,50,74,.10)}.rankTable th{color:#50677a}.rankTable td:last-child,.rankTable th:last-child{text-align:right;font-variant-numeric:tabular-nums}.rankStatus{text-align:center!important;width:28px}.rankDot{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:middle;box-shadow:0 0 0 2px rgba(39,50,74,.10)}.rankDot.active{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.16),0 0 7px rgba(34,197,94,.28)}.rankDot.paused{background:#f5b800;box-shadow:0 0 0 2px rgba(245,184,0,.16)}.rankDot.inactive{background:#8c98a5}.rankEmpty{font-size:13px;color:#64748b;padding:12px 3px}
+.rankSection{margin-top:14px;padding:0;overflow:hidden}.rankToggle{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border:0;background:rgba(246,241,220,.98);color:#27324a;font:inherit;font-weight:900;font-size:18px;text-align:left;cursor:pointer}.rankToggle .toggleHint{font-size:13px;font-weight:700;color:#50677a}.rankContent{padding:0 14px 14px}.rankGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rankCard{min-width:0;border:1px solid rgba(39,50,74,.15);border-radius:13px;padding:12px;background:rgba(255,255,255,.62);color:#27324a}.rankCard h3{margin:0 0 8px;font-size:16px}.rankMeta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}.rankMeta span{font-size:12px;font-weight:800;border-radius:8px;padding:5px 7px;background:rgba(45,122,85,.10);color:#236342}.rankTable{width:100%;font-size:13px}.rankTable th,.rankTable td{padding:6px 5px;border-bottom:1px solid rgba(39,50,74,.10)}.rankTable th{color:#50677a}.rankTable td:last-child,.rankTable th:last-child{text-align:right;font-variant-numeric:tabular-nums}.rankStatus{text-align:center!important;width:28px}.rankDot{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:middle;box-shadow:0 0 0 2px rgba(39,50,74,.10)}.rankDot.active{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.16),0 0 7px rgba(34,197,94,.28)}.rankDot.paused{background:#f5b800;box-shadow:0 0 0 2px rgba(245,184,0,.16)}.rankDot.inactive{background:#8c98a5}.rankHistory{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 13px;color:#27324a;font-size:13px;font-weight:800}.rankHistory select{min-width:150px}.rankHistory span{color:#50677a;font-weight:600}.rankEmpty{font-size:13px;color:#64748b;padding:12px 3px}
 @media(max-width:650px){.rankGrid{grid-template-columns:1fr}.rankToggle{font-size:16px;padding:14px}.rankContent{padding:0 10px 10px}}
 table{width:100%;border-collapse:collapse;font-size:14px;color:#27324a}
 th,td{padding:9px 7px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
@@ -88,6 +88,7 @@ tr.clickable{cursor:pointer}tr.clickable:hover{background:rgba(88,200,237,.10)}
       <span>반별 순위표</span><span class="toggleHint" id="rankToggleHint">펼쳐서 보기　＋</span>
     </button>
     <div class="rankContent" id="rankContent" hidden>
+      <div class="rankHistory"><label for="rankMonth">순위 기준 월</label><select id="rankMonth" aria-label="순위 기준 월"></select><span id="rankMonthHint">이번 달 순위 · 실시간</span></div>
       <div class="rankGrid" id="rankGrid"></div>
       <div class="chartHint">월간 누적 풀이 수 기준입니다. 반 평균은 해당 월에 실제로 한 문제 이상 푼 학생을 기준으로 계산합니다.</div>
     </div>
@@ -121,7 +122,9 @@ const FIREBASE_CONFIG = {
   messagingSenderId:"214361536617",
   appId:"1:214361536617:web:b80f5ac9183bd906e38af8"
 };
-const MONTHLY_RANK_PATH='thirdGrade/monthly/2026-10';
+const MONTHLY_RANK_ROOT='thirdGrade/monthly';
+function currentMonthKey(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}`}
+let activeMonthKey=null, studentsRef=null, refreshTimer=null;
 const RISK_RULES={
   daily500:{label:'하루 500문제 이상'},
   threeDays300:{label:'최근 3일 연속 하루 300문제 이상'},
@@ -129,6 +132,7 @@ const RISK_RULES={
   sevenSessions:{label:'하루 7학습 회차 이상'}
 };
 let db=null, allStudents={}, selectedClass='all';
+let rankMonthKey=null, historicalRankStudents={}, historicalRankRef=null, rankRequestId=0;
 const dateEl=document.getElementById('date');
 
 function pad(n){return String(n).padStart(2,'0')}
@@ -272,7 +276,8 @@ function renderTabs(){
     renderAll();
   });
 }
-function rankStatus(student){
+function rankStatus(student, historical=false){
+  if(historical)return '<span class="rankDot inactive" title="지난달 기록" aria-label="지난달 기록"></span>';
   let lastEnd=0;
   Object.values(student?.activity||{}).forEach(day=>{
     Object.values(day?.sessions||{}).forEach(session=>{
@@ -289,7 +294,9 @@ function renderRankings(){
   const grid=document.getElementById('rankGrid');
   const byClass=new Map();
   for(let c=1;c<=5;c++)byClass.set(c,[]);
-  Object.entries(allStudents||{}).forEach(([key,x])=>{
+  const isHistorical=rankMonthKey!==currentMonthKey();
+  const rankingStudents=isHistorical?historicalRankStudents:allStudents;
+  Object.entries(rankingStudents||{}).forEach(([key,x])=>{
     if(!x)return;
     const c=Number(x.classNo), solved=Number(x.solved||0);
     if(c>=1&&c<=5&&Number.isFinite(c)&&solved>0){
@@ -301,11 +308,36 @@ function renderRankings(){
     const total=rows.reduce((sum,o)=>sum+o.solved,0);
     const avg=rows.length?Math.round(total/rows.length):0;
     const meta=`<div class="rankMeta"><span>참여 ${rows.length}명</span><span>반 평균 ${avg.toLocaleString('ko-KR')}문제</span></div>`;
-    const table=rows.length?`<table class="rankTable"><thead><tr><th>순위</th><th>학생</th><th>누적 풀이</th><th class="rankStatus"></th></tr></thead><tbody>${rows.slice(0,10).map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.x.nickname||'동물')} (${c}-${pad(Number(o.x.studentNo)||0)})</td><td>${o.solved.toLocaleString('ko-KR')}</td><td class="rankStatus">${rankStatus(o.x)}</td></tr>`).join('')}</tbody></table>${rows.length>10?`<div class="chartHint">상위 10명 표시 · 참여 학생 ${rows.length}명</div>`:''}`:'<div class="rankEmpty">아직 풀이 기록이 없습니다.</div>';
+    const table=rows.length?`<table class="rankTable"><thead><tr><th>순위</th><th>학생</th><th>누적 풀이</th><th class="rankStatus"></th></tr></thead><tbody>${rows.map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.x.nickname||'동물')} (${c}-${pad(Number(o.x.studentNo)||0)})</td><td>${o.solved.toLocaleString('ko-KR')}</td><td class="rankStatus">${rankStatus(o.x,isHistorical)}</td></tr>`).join('')}</tbody></table>}`:'<div class="rankEmpty">아직 풀이 기록이 없습니다.</div>';
     return `<article class="rankCard"><h3>${c}반</h3>${meta}${table}</article>`;
   }).join('');
 }
 function renderAll(){renderTabs();render();renderDaily();renderRankings()}
+function populateRankMonths(){
+  const sel=document.getElementById('rankMonth');
+  const now=currentMonthKey();
+  if(!rankMonthKey || rankMonthKey>now)rankMonthKey=now;
+  const months=[];let [y,m]=now.split('-').map(Number);
+  while(y>2026 || (y===2026&&m>=10)){
+    const key=`${y}-${pad(m)}`;
+    months.push(`<option value="${key}">${y}년 ${m}월${key===now?' (이번 달)':''}</option>`);
+    if(--m===0){m=12;y--}
+  }
+  sel.innerHTML=months.join('');sel.value=rankMonthKey;
+}
+function loadRankMonth(){
+  if(!db)return;
+  const historical=rankMonthKey!==currentMonthKey();
+  document.getElementById('rankMonthHint').textContent=historical?'지난 순위 · 월말 누적 기록':'이번 달 순위 · 실시간';
+  if(historicalRankRef){historicalRankRef.off();historicalRankRef=null}
+  const request=++rankRequestId;
+  if(!historical){historicalRankStudents={};renderRankings();return}
+  historicalRankStudents={};renderRankings();
+  const ref=db.ref(`${MONTHLY_RANK_ROOT}/${rankMonthKey}/students`);
+  historicalRankRef=ref;
+  ref.on('value',snap=>{if(request!==rankRequestId)return;historicalRankStudents=snap.val()||{};renderRankings()},showError);
+}
+document.getElementById('rankMonth').addEventListener('change',e=>{rankMonthKey=e.target.value;loadRankMonth()});
 
 document.getElementById('rankToggle').onclick=()=>{const content=document.getElementById('rankContent');const open=content.hidden;content.hidden=!open;document.getElementById('rankToggle').setAttribute('aria-expanded',String(open));document.getElementById('rankToggleHint').textContent=open?'접기　−':'펼쳐서 보기　＋';};
 document.querySelectorAll('[data-open-chart]').forEach(b=>b.onclick=()=>openChart(b.dataset.openChart));
@@ -319,20 +351,43 @@ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
 });
 dateEl.onchange=renderAll;
 
+function subscribeToCurrentMonth(){
+  if(!db)return;
+  const month=currentMonthKey();
+  if(activeMonthKey===month)return;
+  if(studentsRef)studentsRef.off();
+  activeMonthKey=month;
+  populateRankMonths();
+  loadRankMonth();
+  allStudents={}; selectedClass='all';
+  dateEl.value=dateKeyLocal(new Date());
+  document.getElementById('detail').innerHTML='';
+  renderAll();
+  const ref=db.ref(`${MONTHLY_RANK_ROOT}/${month}/students`);
+  studentsRef=ref;
+  document.getElementById('connection').textContent=`Firebase 연결됨 · ${month} · 실시간`;
+  ref.on('value',snap=>{
+    if(studentsRef!==ref)return;
+    allStudents=snap.val()||{};
+    renderAll();
+  },showError);
+}
 try{
   firebase.initializeApp(FIREBASE_CONFIG);
   db=firebase.database();
   firebase.auth().signInAnonymously().then(()=>{
-    document.getElementById('connection').textContent='Firebase 연결됨 · 실시간';
-    const studentsRef=db.ref(MONTHLY_RANK_PATH+'/students');
-    // Firebase 실시간 감지 + 주기적 재확인: 교사 화면을 열어둔 상태에서도 최신값을 놓치지 않도록 함
-    studentsRef.on('value',snap=>{allStudents=snap.val()||{}; renderAll()},showError);
-    studentsRef.on('child_changed',()=>studentsRef.once('value').then(snap=>{allStudents=snap.val()||{}; renderAll()}).catch(showError));
+    subscribeToCurrentMonth();
+    // 열린 탭에서도 자정 이후 새 월 경로로 자동 전환
     setInterval(()=>{
-      studentsRef.once('value').then(snap=>{allStudents=snap.val()||{}; renderAll()}).catch(()=>{});
+      subscribeToCurrentMonth();
+      if(studentsRef)studentsRef.once('value').then(snap=>{
+        if(activeMonthKey!==currentMonthKey())return;
+        allStudents=snap.val()||{};renderAll();
+      }).catch(showError);
     },5000);
-    // 풀이가 새로 발생하지 않아도 10초마다 상태(학습 중/잠시 멈춤/활동 없음)를 갱신
     setInterval(()=>{render();renderRankings()},10000);
+    window.addEventListener('focus',subscribeToCurrentMonth);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)subscribeToCurrentMonth()});
   }).catch(showError);
 }catch(e){showError(e)}
 </script>
